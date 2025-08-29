@@ -10,41 +10,20 @@ import '../styles/global.css';
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro Basics</title>
-		<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+
+		<!-- Google Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;900&family=Red+Hat+Display:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+
+
 	</head>
 	<body>
 		<slot />
 	</body>
 </html>
 
-<script>
-	import Lenis from 'lenis';
 
-	// Initialize Lenis with your configuration
-	const lenis = new Lenis({
-		duration: 1.2,
-		easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Light easing
-		infinite: false,
-	});
-
-	// Make Lenis globally accessible for debugging
-	(window as any).lenis = lenis;
-
-	// Animation frame loop
-	function raf(time: number) {
-		lenis.raf(time);
-		requestAnimationFrame(raf);
-	}
-
-	requestAnimationFrame(raf);
-
-	// Log that Lenis is initialized
-	console.log('Lenis smooth scroll initialized with config:', {
-		duration: 1.2,
-		easing: 'custom light easing',
-		infinite: false
-	});
-</script>
 
 <style>
 	html,
