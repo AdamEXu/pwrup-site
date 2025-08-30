@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 
 interface TypewriterEffectProps {
-    words: { text: string }[];
+    words: { text: string; className?: string }[];
     speed?: number; // milliseconds between characters
     delay?: number; // delay before starting
     className?: string;
+    jitter?: number; // percentage of speed variation (0-100)
 }
 
 export function TypewriterEffect({
@@ -12,27 +13,68 @@ export function TypewriterEffect({
     speed = 50,
     delay = 0,
     className = "",
+    jitter = 20,
 }: TypewriterEffectProps) {
-    const [displayText, setDisplayText] = useState("");
     const [currentWordIndex, setCurrentWordIndex] = useState(0);
     const [currentCharIndex, setCurrentCharIndex] = useState(0);
-
-    // Combine all words into one string with spaces
-    const fullText = words.map((word) => word.text).join(" ");
+    const [displayedWords, setDisplayedWords] = useState<
+        { text: string; className?: string; isComplete: boolean }[]
+    >([]);
 
     useEffect(() => {
-        if (currentCharIndex >= fullText.length) return;
+        if (currentWordIndex >= words.length) return;
 
+        const currentWord = words[currentWordIndex];
         const timer = setTimeout(
             () => {
-                setDisplayText(fullText.slice(0, currentCharIndex + 1));
-                setCurrentCharIndex((prev) => prev + 1);
+                if (currentCharIndex < currentWord.text.length) {
+                    // Still typing current word
+                    setDisplayedWords((prev) => {
+                        const newWords = [...prev];
+                        if (newWords[currentWordIndex]) {
+                            newWords[currentWordIndex] = {
+                                ...currentWord,
+                                text: currentWord.text.slice(
+                                    0,
+                                    currentCharIndex + 1
+                                ),
+                                isComplete: false,
+                            };
+                        } else {
+                            newWords[currentWordIndex] = {
+                                ...currentWord,
+                                text: currentWord.text.slice(
+                                    0,
+                                    currentCharIndex + 1
+                                ),
+                                isComplete: false,
+                            };
+                        }
+                        return newWords;
+                    });
+                    setCurrentCharIndex((prev) => prev + 1);
+                } else {
+                    // Finished current word, move to next
+                    setDisplayedWords((prev) => {
+                        const newWords = [...prev];
+                        newWords[currentWordIndex] = {
+                            ...currentWord,
+                            text: currentWord.text,
+                            isComplete: true,
+                        };
+                        return newWords;
+                    });
+                    setCurrentWordIndex((prev) => prev + 1);
+                    setCurrentCharIndex(0);
+                }
             },
-            currentCharIndex === 0 ? delay : speed
+            currentCharIndex === 0 && currentWordIndex === 0
+                ? delay
+                : speed + (Math.random() - 0.5) * 2 * ((speed * jitter) / 100)
         );
 
         return () => clearTimeout(timer);
-    }, [currentCharIndex, fullText, speed, delay]);
+    }, [currentWordIndex, currentCharIndex, words, speed, delay, jitter]);
 
     return (
         <span
@@ -44,9 +86,18 @@ export function TypewriterEffect({
                 lineHeight: "inherit",
                 color: "inherit",
                 letterSpacing: "inherit",
+                textShadow:
+                    "2px 2px 4px rgba(0, 0, 0, 0.4), 0px 0px 8px rgba(0, 0, 0, 0.2)",
             }}
         >
-            {displayText}
+            {displayedWords.map((word, index) => (
+                <span key={index}>
+                    <span className={word.className || ""}>{word.text}</span>
+                    {index < displayedWords.length - 1 &&
+                        word.isComplete &&
+                        " "}
+                </span>
+            ))}
         </span>
     );
 }

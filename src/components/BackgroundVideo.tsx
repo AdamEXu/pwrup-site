@@ -24,6 +24,10 @@ export default function BackgroundVideo() {
         video.muted = true;
         video.loop = true;
         video.playsInline = true;
+        video.crossOrigin = "anonymous"; // Help with loading
+
+        // Force loading to start immediately
+        video.load();
 
         const handleLoadedMetadata = () => {
             // Set random start time after metadata is loaded
@@ -31,24 +35,17 @@ export default function BackgroundVideo() {
         };
 
         const handleCanPlay = () => {
-            // Make sure we're at the right start time before playing
-            if (Math.abs(video.currentTime - startTime) > 1) {
-                video.currentTime = startTime;
+            // Only play if not already loaded to avoid duplicate calls
+            if (!isLoaded) {
+                setIsLoaded(true);
+                video.play().catch(console.error);
             }
-            setIsLoaded(true);
-            video.play().catch(console.error);
         };
 
         const handleLoadedData = () => {
-            // Start playing as soon as we have some data, don't wait for buffer
-            handleCanPlay();
-        };
-
-        const handleCanPlayThrough = () => {
-            // This fires when we have enough data to play through
-            if (!isLoaded) {
-                handleCanPlay();
-            }
+            // Start playing when we have loaded data
+            setIsLoaded(true);
+            video.play().catch(console.error);
         };
 
         const handleProgress = () => {
@@ -89,8 +86,7 @@ export default function BackgroundVideo() {
         video.addEventListener("timeupdate", handleTimeUpdate);
         video.addEventListener("ended", handleEnded);
 
-        // Start loading
-        video.load();
+        // Video loading already started above
 
         return () => {
             video.removeEventListener("loadedmetadata", handleLoadedMetadata);
@@ -119,5 +115,7 @@ export default function BackgroundVideo() {
                 />
             )}
         </div>
+        // for testing
+        // <div className="fixed inset-0 -z-10 overflow-hidden bg-white"></div>
     );
 }

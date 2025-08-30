@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import NavBar from '../components/NavBar.tsx';
 ---
 
 <!doctype html>
@@ -19,7 +20,24 @@ import '../styles/global.css';
 
 	</head>
 	<body>
+		<div style="z-index: 100; position: fixed; top: 0; left: 0; width: 100%;">
+			<NavBar client:load isHomePage={Astro.url.pathname === '/'} />
+		</div>
 		<slot />
+		<script>
+  const prefetch = new Set();
+  const add = (href) => {
+    if (prefetch.has(href)) return;
+    const l = document.createElement('link');
+    l.rel = 'prefetch'; l.href = href;
+    document.head.appendChild(l); prefetch.add(href);
+  };
+  document.addEventListener('mouseover', e => {
+    const a = e.target.closest('a[href^="/"]');
+    if (a) add(a.href);
+  }, { passive: true });
+</script>
+
 	</body>
 </html>
 
