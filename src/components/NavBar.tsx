@@ -12,7 +12,7 @@ export default function NavBar({
 
         const handleScroll = () => {
             const scrollY = window.scrollY;
-            const halfWindowHeight = window.innerHeight / 2;
+            const halfWindowHeight = window.innerHeight * 0.6;
             const shouldShow = scrollY > halfWindowHeight;
 
             setIsVisible(shouldShow);

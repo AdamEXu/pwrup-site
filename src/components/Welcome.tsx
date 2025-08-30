@@ -42,12 +42,16 @@ export default function Welcome() {
                                 <TypewriterEffect words={words} />
                             </h1>
                             <div className="flex justify-center flex-col sm:flex-row gap-8 w-[50%] mx-auto">
-                                <FancyButton className="w-full sm:w-[160px]">
-                                    About
-                                </FancyButton>
-                                <FancyButton className="w-full sm:w-[160px]">
-                                    Blog
-                                </FancyButton>
+                                <a href="#about">
+                                    <FancyButton className="w-full sm:w-[160px]">
+                                        About
+                                    </FancyButton>
+                                </a>
+                                <a href="/blog">
+                                    <FancyButton className="w-full sm:w-[160px]">
+                                        Blog
+                                    </FancyButton>
+                                </a>
                                 <FancyButton className="w-full sm:w-[160px]">
                                     Socials
                                 </FancyButton>

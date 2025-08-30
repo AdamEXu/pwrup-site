@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro'
+import BlogPost from '../../components/BlogPost.tsx'
 import { getPostBySlug } from '../../lib/kv'
 import { marked } from 'marked'
 export const prerender = false
@@ -7,7 +8,7 @@ const post = await getPostBySlug(Astro.params.slug!)
 if (!post) {
   throw new Response(null, { status: 404 })
 }
-const html = marked.parse(post.content)
+const html = await marked.parse(post.content)
 
 // SEO data
 const seoTitle = `${post.title} | PWRUP`
@@ -25,9 +26,5 @@ const seoTags = post.tags
   publishedAt={seoPublishedAt}
   tags={seoTags}
 >
-  <main class="bg-black text-white min-h-screen p-6">
-    <h1 class="text-3xl mb-4">{post.title}</h1>
-    {post.headerImage && <img src={post.headerImage.url} alt={post.headerImage.alt || post.title} class="mb-4" />}
-    <article class="prose prose-invert max-w-none" set:html={html} />
-  </main>
+  <BlogPost post={post} content={html} client:load />
 </Layout>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import BlogPost from "./BlogPost";
 
 interface Post {
     id?: string | number;
@@ -92,72 +93,79 @@ export default function BlogPage() {
     }, [tag, month, q, page, limit]);
 
     return (
-        <div className="blog-page">
-            <div className="filters">
-                <div className="tags">
-                    {tags.map((t) => (
-                        <button
-                            key={t}
-                            onClick={() => {
-                                setTag(t === tag ? "" : t);
+        <main className="bg-black text-white min-h-screen p-6">
+            <div id="push" style={{ height: "56px" }}></div>
+            <div className="blog-page max-w-3xl mx-auto">
+                <div className="filters mt-12 flex flex-row gap-4 flex-wrap justify-center">
+                    <div className="tags flex flex-wrap gap-4">
+                        {tags.map((t) => (
+                            <button
+                                key={t}
+                                onClick={() => {
+                                    setTag(t === tag ? "" : t);
+                                    setPage(1);
+                                }}
+                                className={`${
+                                    t === tag ? "selected" : ""
+                                } px-4 py-2 rounded-full bg-white/10 hover:bg-white/20`}
+                            >
+                                {t}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="month-select mt-4">
+                        <select
+                            value={month}
+                            onChange={(e) => {
+                                setMonth(e.target.value);
                                 setPage(1);
                             }}
-                            className={t === tag ? "selected" : ""}
+                            className="bg-white/10 rounded-full px-4 py-2 hover:bg-white/20"
                         >
-                            {t}
-                        </button>
+                            <option value="">All months</option>
+                            {months.map((m) => (
+                                <option key={m} value={m}>
+                                    {m}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="search-input mt-4">
+                        <input
+                            type="text"
+                            value={q}
+                            placeholder="Search"
+                            onChange={(e) => {
+                                setQ(e.target.value);
+                                setPage(1);
+                            }}
+                            className="bg-white/10 rounded-full px-4 py-2 hover:bg-white/20"
+                        />
+                    </div>
+                </div>
+                <ul className="posts mt-12 space-y-4">
+                    {posts.map((p, idx) => (
+                        <BlogPost key={p.id ?? idx} post={p} />
                     ))}
-                </div>
-                <div className="month-select">
-                    <select
-                        value={month}
-                        onChange={(e) => {
-                            setMonth(e.target.value);
-                            setPage(1);
-                        }}
-                    >
-                        <option value="">All months</option>
-                        {months.map((m) => (
-                            <option key={m} value={m}>
-                                {m}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="search-input">
-                    <input
-                        type="text"
-                        value={q}
-                        placeholder="Search"
-                        onChange={(e) => {
-                            setQ(e.target.value);
-                            setPage(1);
-                        }}
-                    />
+                </ul>
+                <div className="pagination">
+                    <span>
+                        Page {page} of {totalPages} ({total} total)
+                    </span>
+                    <div className="links">
+                        {page > 1 && (
+                            <button onClick={() => setPage(page - 1)}>
+                                Previous
+                            </button>
+                        )}
+                        {page < totalPages && (
+                            <button onClick={() => setPage(page + 1)}>
+                                Next
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
-
-            <ul className="posts">
-                {posts.map((p, idx) => (
-                    <li key={p.id ?? idx}>{p.title ?? "Untitled"}</li>
-                ))}
-            </ul>
-
-            <div className="pagination">
-                <span>
-                    Page {page} of {totalPages} ({total} total)
-                </span>
-                <div className="links">
-                    {page > 1 && (
-                        <button onClick={() => setPage(page - 1)}>
-                            Previous
-                        </button>
-                    )}
-                    {page < totalPages && (
-                        <button onClick={() => setPage(page + 1)}>Next</button>
-                    )}
-                </div>
-            </div>
-        </div>
+        </main>
     );
 }
