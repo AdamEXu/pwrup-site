@@ -8,11 +8,26 @@ if (!post) {
   throw new Response(null, { status: 404 })
 }
 const html = marked.parse(post.content)
+
+// SEO data
+const seoTitle = `${post.title} | PWRUP`
+const seoDescription = post.description || post.content.substring(0, 160).replace(/[#*]/g, '').trim() + '...'
+const seoImage = post.headerImage?.url || undefined
+const seoAuthor = post.author.name
+const seoPublishedAt = post.publishedAt
+const seoTags = post.tags
 ---
-<Layout>
+<Layout
+  title={seoTitle}
+  description={seoDescription}
+  image={seoImage}
+  author={seoAuthor}
+  publishedAt={seoPublishedAt}
+  tags={seoTags}
+>
   <main class="bg-black text-white min-h-screen p-6">
     <h1 class="text-3xl mb-4">{post.title}</h1>
-    {post.headerImage && <img src={post.headerImage.url} alt={post.headerImage.alt} class="mb-4" />}
+    {post.headerImage && <img src={post.headerImage.url} alt={post.headerImage.alt || post.title} class="mb-4" />}
     <article class="prose prose-invert max-w-none" set:html={html} />
   </main>
 </Layout>

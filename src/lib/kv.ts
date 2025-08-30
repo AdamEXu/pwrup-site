@@ -153,7 +153,19 @@ export async function createPost(
 
 export async function getPostById(id: string): Promise<Post | null> {
     const data = await redis.get<string>(keys.post(id));
-    return data ? (JSON.parse(data) as Post) : null;
+    if (!data) return null;
+
+    // Handle case where data is already an object (Redis sometimes returns parsed JSON)
+    if (typeof data === "object") {
+        return data as Post;
+    }
+
+    try {
+        return JSON.parse(data) as Post;
+    } catch (error) {
+        console.error("Error parsing post data:", error, "Data:", data);
+        return null;
+    }
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {

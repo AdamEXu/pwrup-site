@@ -42,8 +42,8 @@ if (!post) {
     <div class="flex gap-4 mt-4">
       <button id="delete-btn" class="p-2 bg-red-600 text-white rounded">Delete Post</button>
     </div>
-    <script type="module">
-      const POST_ID = '{post.id}';
+    <script type="module" define:vars={{ postId: post.id }}>
+      const POST_ID = postId;
       const form = document.getElementById('post-form');
       const title = document.getElementById('title');
       const slug = document.getElementById('slug');
