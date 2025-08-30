@@ -1,0 +1,110 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout>
+  <div class="max-w-2xl mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">New Post</h1>
+    <form id="post-form" class="space-y-4">
+      <input id="title" type="text" placeholder="Title" class="w-full p-2 border" />
+      <input id="slug" type="text" placeholder="Slug" class="w-full p-2 border" />
+      <input id="tags" type="text" placeholder="Tags (comma separated)" class="w-full p-2 border" />
+      <select id="status" class="w-full p-2 border">
+        <option value="draft">Draft</option>
+        <option value="published">Published</option>
+      </select>
+      <input id="readingTime" type="number" placeholder="Reading Time (min)" class="w-full p-2 border" />
+      <input id="headerImage" type="file" class="w-full p-2 border" />
+      <textarea id="content" placeholder="Markdown content" class="w-full p-2 border h-48"></textarea>
+      <div>
+        <h2 class="font-semibold">Preview</h2>
+        <div id="preview" class="border p-2"></div>
+      </div>
+      <button type="submit" class="p-2 bg-blue-600 text-white">Save</button>
+    </form>
+  </div>
+  <script type="module">
+    const STORAGE_KEY = 'new-post-draft';
+    const form = document.getElementById('post-form');
+    const title = document.getElementById('title');
+    const slug = document.getElementById('slug');
+    const tags = document.getElementById('tags');
+    const status = document.getElementById('status');
+    const readingTime = document.getElementById('readingTime');
+    const headerImage = document.getElementById('headerImage');
+    const content = document.getElementById('content');
+    const preview = document.getElementById('preview');
+    let headerImageUrl = '';
+
+    async function renderPreview() {
+      const { marked } = await import('https://cdn.jsdelivr.net/npm/marked/marked.min.js');
+      preview.innerHTML = marked.parse(content.value);
+    }
+    content.addEventListener('input', renderPreview);
+
+    function saveDraft() {
+      const data = {
+        title: title.value,
+        slug: slug.value,
+        tags: tags.value,
+        status: status.value,
+        readingTime: readingTime.value,
+        headerImageUrl,
+        content: content.value
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+    form.addEventListener('input', saveDraft);
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const data = JSON.parse(saved);
+      title.value = data.title || '';
+      slug.value = data.slug || '';
+      tags.value = data.tags || '';
+      status.value = data.status || 'draft';
+      readingTime.value = data.readingTime || '';
+      if (data.headerImageUrl) headerImageUrl = data.headerImageUrl;
+      content.value = data.content || '';
+      renderPreview();
+    }
+
+    headerImage.addEventListener('change', async () => {
+      const file = headerImage.files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append('file', file);
+      const token = localStorage.getItem('token') || '';
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+      const json = await res.json();
+      headerImageUrl = json.url;
+      saveDraft();
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = localStorage.getItem('token') || '';
+      const body = {
+        title: title.value,
+        slug: slug.value,
+        tags: tags.value.split(',').map(t => t.trim()).filter(Boolean),
+        status: status.value,
+        readingTime: readingTime.value ? parseInt(readingTime.value) : undefined,
+        headerImage: headerImageUrl,
+        content: content.value
+      };
+      await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(body)
+      });
+      localStorage.removeItem(STORAGE_KEY);
+    });
+  </script>
+</Layout>
