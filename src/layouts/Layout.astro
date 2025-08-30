@@ -1,30 +1,31 @@
 ---
 import '../styles/global.css';
 import NavBar from '../components/NavBar.tsx';
+
+const { title = 'Astro Basics', description = '' } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-
-		<!-- Google Fonts -->
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;900&family=Red+Hat+Display:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-
-
-	</head>
-	<body>
-		<div style="z-index: 100; position: fixed; top: 0; left: 0; width: 100%;">
-			<NavBar client:load isHomePage={Astro.url.pathname === '/'} />
-		</div>
-		<slot />
-		<script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;900&family=Red+Hat+Display:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <slot name="head" />
+  </head>
+  <body>
+    <div style="z-index: 100; position: fixed; top: 0; left: 0; width: 100%;">
+      <NavBar client:load isHomePage={Astro.url.pathname === '/'} />
+    </div>
+    <slot />
+    <script>
   const prefetch = new Set();
   const add = (href) => {
     if (prefetch.has(href)) return;
@@ -38,16 +39,14 @@ import NavBar from '../components/NavBar.tsx';
   }, { passive: true });
 </script>
 
-	</body>
+  </body>
 </html>
 
-
-
 <style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
 </style>

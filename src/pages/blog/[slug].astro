@@ -1,0 +1,76 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post }
+  }));
+}
+
+const { post } = Astro.props;
+const { title, description, publishDate, author, tags } = post.data;
+const { Content } = await post.render();
+
+const metaTitle = title ?? 'Blog Post';
+const metaDescription = description ?? 'Read more on our blog.';
+const formattedDate = publishDate
+  ? new Date(publishDate).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  : '';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: metaTitle,
+  description: metaDescription,
+  datePublished: publishDate,
+  author: author?.name
+    ? {
+        '@type': 'Person',
+        name: author.name,
+        image: author.avatar
+      }
+    : undefined,
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': Astro.url.href
+  }
+};
+---
+
+<Layout title={metaTitle} description={metaDescription}>
+  <Fragment slot="head">
+    <meta property="og:title" content={metaTitle} />
+    <meta property="og:description" content={metaDescription} />
+    <meta name="twitter:title" content={metaTitle} />
+    <meta name="twitter:description" content={metaDescription} />
+    <script type="application/ld+json">
+      {JSON.stringify(jsonLd)}
+    </script>
+  </Fragment>
+
+  <article>
+    <header>
+      <h1>{title}</h1>
+      <div>
+        {author?.avatar && <img src={author.avatar} alt={author.name} width="40" height="40" />}
+        {author?.name && <span>{author.name}</span>}
+        {formattedDate && <time datetime={publishDate}>{formattedDate}</time>}
+      </div>
+      {Array.isArray(tags) && tags.length > 0 && (
+        <ul>
+          {tags.map((tag) => (
+            <li><a href={`/blog/tag/${tag}`}>{tag}</a></li>
+          ))}
+        </ul>
+      )}
+    </header>
+    <Content />
+  </article>
+</Layout>
