@@ -11,6 +11,7 @@
   "dependencies": {
     "@astrojs/react": "^4.3.0",
     "@clerk/astro": "^2.11.8",
+    "@clerk/clerk-js": "^5.90.0",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
     "@upstash/redis": "^1.35.3",

@@ -1,32 +1,8 @@
 ---
-<<<<<<< HEAD
-import Layout from '../../layouts/Layout.astro'
-import { redis, keys, getPostById, type Post } from '../../lib/kv'
-export const prerender = false
-const page = Number(Astro.url.searchParams.get('page') || '1')
-const limit = 12
-const start = (page - 1) * limit
-const ids = await redis.zrevrange<string[]>(keys.zPublished, start, start + limit - 1)
-const posts = (await Promise.all(ids.map(id => getPostById(id)))).filter((p): p is Post => p !== null)
----
-<Layout>
-  <main class="bg-black text-white min-h-screen p-6">
-    <h1 class="text-3xl mb-6">Blog</h1>
-    <ul class="space-y-8">
-      {posts.map(post => (
-        <li key={post.id}>
-          <a href={`/blog/${post.slug}`} class="text-2xl text-green-400">{post.title}</a>
-          <p class="text-sm text-gray-300">{post.description}</p>
-        </li>
-      ))}
-    </ul>
-  </main>
-=======
 import Layout from '../../layouts/Layout.astro';
 import BlogPage from '../../components/BlogPage.tsx';
 ---
 
 <Layout>
   <BlogPage client:load />
->>>>>>> origin/codex/update-blog-index-for-metadata-loading
 </Layout>
