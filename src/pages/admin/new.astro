@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro'
 import { requireAdmin, AuthError } from '../../lib/auth'
 export const prerender = false
 try {
-  await requireAdmin(Astro.request)
+  await requireAdmin(Astro)
 } catch (e) {
   if (e instanceof AuthError) {
     if (e.status === 401) {
@@ -15,25 +15,127 @@ try {
 }
 ---
 <Layout>
-  <main class="p-6 space-y-4">
-    <h1 class="text-2xl">New Post</h1>
+  <div class="max-w-2xl mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">New Post</h1>
     <form id="post-form" class="space-y-4">
-      <input type="text" name="title" placeholder="Title" class="border p-2 w-full" required />
-      <textarea name="description" placeholder="Description" class="border p-2 w-full" required></textarea>
-      <textarea name="content" placeholder="Content" class="border p-2 w-full h-40" required></textarea>
-      <button type="submit" class="bg-green-600 text-white px-4 py-2">Publish</button>
+      <input id="title" type="text" placeholder="Title" class="w-full p-2 border" required />
+      <input id="slug" type="text" placeholder="Slug" class="w-full p-2 border" />
+      <textarea id="description" placeholder="Description" class="w-full p-2 border" required></textarea>
+      <input id="tags" type="text" placeholder="Tags (comma separated)" class="w-full p-2 border" />
+      <select id="status" class="w-full p-2 border">
+        <option value="draft">Draft</option>
+        <option value="published">Published</option>
+      </select>
+      <input id="readingTime" type="number" placeholder="Reading Time (min)" class="w-full p-2 border" />
+      <textarea id="content" placeholder="Markdown content" class="w-full p-2 border h-48" required></textarea>
+      <div>
+        <h2 class="font-semibold">Preview</h2>
+        <div id="preview" class="border p-2 min-h-[100px]"></div>
+      </div>
+      <button type="submit" class="p-2 bg-blue-600 text-white rounded">Save Post</button>
     </form>
     <script type="module">
+      const STORAGE_KEY = 'new-post-draft';
       const form = document.getElementById('post-form');
-      form?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const fd = new FormData(form as HTMLFormElement);
-        const body: any = Object.fromEntries(fd.entries());
-        body.tags = [];
-        body.status = 'published';
-        const res = await fetch('/api/posts/create', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(body)});
-        if (res.ok) { window.location.href = '/admin'; } else { alert('Error'); }
+      const title = document.getElementById('title');
+      const slug = document.getElementById('slug');
+      const description = document.getElementById('description');
+      const tags = document.getElementById('tags');
+      const status = document.getElementById('status');
+      const readingTime = document.getElementById('readingTime');
+      const content = document.getElementById('content');
+      const preview = document.getElementById('preview');
+
+      // Auto-generate slug from title
+      title.addEventListener('input', () => {
+        if (!slug.value) {
+          slug.value = title.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        }
       });
+
+      // Markdown preview
+      async function renderPreview() {
+        if (!content.value) {
+          preview.innerHTML = '<p class="text-gray-500">Preview will appear here...</p>';
+          return;
+        }
+        try {
+          const { marked } = await import('https://cdn.jsdelivr.net/npm/marked/marked.min.js');
+          preview.innerHTML = marked.parse(content.value);
+        } catch (error) {
+          preview.innerHTML = '<p class="text-red-500">Error loading preview</p>';
+        }
+      }
+      content.addEventListener('input', renderPreview);
+
+      // Auto-save draft
+      function saveDraft() {
+        const data = {
+          title: title.value,
+          slug: slug.value,
+          description: description.value,
+          tags: tags.value,
+          status: status.value,
+          readingTime: readingTime.value,
+          content: content.value
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
+      form.addEventListener('input', saveDraft);
+
+      // Load saved draft
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          title.value = data.title || '';
+          slug.value = data.slug || '';
+          description.value = data.description || '';
+          tags.value = data.tags || '';
+          status.value = data.status || 'draft';
+          readingTime.value = data.readingTime || '';
+          content.value = data.content || '';
+          renderPreview();
+        } catch (error) {
+          console.error('Error loading draft:', error);
+        }
+      }
+
+      // Form submission
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const body = {
+          title: title.value,
+          slug: slug.value,
+          description: description.value,
+          tags: tags.value.split(',').map(t => t.trim()).filter(Boolean),
+          status: status.value,
+          readingTime: readingTime.value ? parseInt(readingTime.value) : undefined,
+          content: content.value
+        };
+
+        try {
+          const res = await fetch('/api/posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+
+          if (res.ok) {
+            localStorage.removeItem(STORAGE_KEY);
+            window.location.href = '/admin';
+          } else {
+            const error = await res.text();
+            alert('Error creating post: ' + error);
+          }
+        } catch (error) {
+          alert('Error creating post: ' + error.message);
+        }
+      });
+
+      // Initial preview render
+      renderPreview();
     </script>
-  </main>
+  </div>
 </Layout>
