@@ -1,11 +1,26 @@
 ---
-import Welcome from '../components/Welcome.tsx';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
 <Layout>
-	<Welcome client:load />
+  <form id="editor" onsubmit="return savePost(event)" class="space-y-4">
+    <input type="file" id="file" />
+    <textarea id="content" placeholder="Write something..."></textarea>
+    <button type="submit">Save</button>
+  </form>
+  <script>
+    async function savePost(e) {
+      e.preventDefault();
+      const fileInput = document.getElementById('file');
+      const file = fileInput.files[0];
+      let imageUrl = null;
+      if (file) {
+        const res = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`);
+        const data = await res.json();
+        await fetch(data.uploadUrl, { method: 'PUT', body: file });
+        imageUrl = data.publicUrl;
+      }
+      console.log('Saving post with image', imageUrl);
+    }
+  </script>
 </Layout>
