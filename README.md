@@ -41,6 +41,21 @@ All commands are run from the root of the project, from a terminal:
 | `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `pnpm astro -- --help` | Get help using the Astro CLI                     |
 
+## Admin API authentication
+
+Admin pages must authenticate requests to protected endpoints. Retrieve a session token in client code with `Clerk.session.getToken()` and include it as a Bearer token in the `Authorization` header:
+
+```ts
+const token = await Clerk.session.getToken();
+await fetch("/api/admins", {
+    headers: {
+        Authorization: `Bearer ${token}`,
+    },
+});
+```
+
+All requests to `/api/posts/*`, `/api/admins`, and `/api/upload` require this header. The helper `adminFetch` in `src/lib/admin.ts` adds it automatically.
+
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
