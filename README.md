@@ -1,46 +1,51 @@
-# Astro Starter Kit: Basics
+# Pwrup Blog
 
-```sh
-pnpm create astro@latest -- --template basics
+Blog platform built with [Astro](https://astro.build/), [Clerk](https://clerk.dev) for auth, [Upstash Redis](https://upstash.com) for storage and [Cloudflare R2](https://www.cloudflare.com/products/r2/) for image hosting.
+
+## Getting started
+
+```bash
+pnpm install
+cp .env.example .env # fill in secrets
+pnpm dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Environment variables
 
-## 🚀 Project Structure
+See `.env.example` for all required variables:
 
-Inside of your Astro project, you'll see the following folders and files:
+- `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY` – Clerk keys.
+- `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` – Upstash REST credentials.
+- `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_BASE_URL` – Cloudflare R2 configuration.
+- `SITE_URL`, `DEFAULT_OG_IMAGE` – site metadata.
+- `SEED_ADMIN_EMAILS` – optional comma separated admin emails to seed.
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
+## KV Schema
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+Posts and indexes are stored in Upstash using the following keys:
 
-## 🧞 Commands
+| Key | Type | Description |
+| --- | ---- | ----------- |
+| `post:<id>` | JSON | full post record |
+| `post:slug:<slug>` | string | maps slug to post id |
+| `zidx:posts:published` | ZSET | post ids scored by `publishedAt` |
+| `zidx:posts:draft` | ZSET | post ids scored by `updatedAt` |
+| `sidx:tag:<tag>` | SET | post ids for a given tag |
+| `sidx:author:<authorId>` | SET | post ids by author |
+| `sidx:month:<YYYY-MM>` | SET | archive index for month |
+| `author:<clerkUserId>` | JSON | cached author profile |
+| `author:byEmail:<email>` | string | lookup from email to author id |
+| `s:admins:emails` | SET | lower–cased admin email allow‑list |
 
-All commands are run from the root of the project, from a terminal:
+The `post` record contains fields such as `id`, `slug`, `status`, `title`, `description`, `tags`, `author`, `headerImage`, `content` and timestamps. Secondary indexes must be kept in sync whenever a post is created, updated or deleted.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+## Scripts
 
-## 👀 Want to learn more?
+- `pnpm dev` – start the development server.
+- `pnpm build` – build the site for production.
+- `pnpm preview` – preview a production build.
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+
+## Notes
+
+Run `pnpm install` after pulling changes to install new dependencies before building.
