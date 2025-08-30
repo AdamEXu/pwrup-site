@@ -1,4 +1,5 @@
 ---
+<<<<<<< HEAD
 import Layout from '../../layouts/Layout.astro'
 import { redis, keys, getPostById, type Post } from '../../lib/kv'
 export const prerender = false
@@ -20,4 +21,12 @@ const posts = (await Promise.all(ids.map(id => getPostById(id)))).filter((p): p 
       ))}
     </ul>
   </main>
+=======
+import Layout from '../../layouts/Layout.astro';
+import BlogPage from '../../components/BlogPage.tsx';
+---
+
+<Layout>
+  <BlogPage client:load />
+>>>>>>> origin/codex/update-blog-index-for-metadata-loading
 </Layout>
