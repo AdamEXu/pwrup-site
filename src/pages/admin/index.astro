@@ -5,9 +5,9 @@ import { requireAdmin, AuthError } from '../../lib/auth'
 export const prerender = false
 let posts: Post[] = []
 try {
-  await requireAdmin(Astro.request)
-  const pubIds = await redis.zrevrange<string[]>(keys.zPublished, 0, 50)
-  const draftIds = await redis.zrevrange<string[]>(keys.zDraft, 0, 50)
+  await requireAdmin(Astro)
+  const pubIds = await redis.zrange<string[]>(keys.zPublished, 0, 50, { rev: true })
+  const draftIds = await redis.zrange<string[]>(keys.zDraft, 0, 50, { rev: true })
   const allIds = [...draftIds, ...pubIds]
   posts = (await Promise.all(allIds.map(id => getPostById(id)))).filter((p): p is Post => p !== null)
 } catch (e) {
