@@ -1,0 +1,36 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import { redis, keys, getPostById, type Post } from '../../lib/kv'
+import { requireAdmin, AuthError } from '../../lib/auth'
+export const prerender = false
+let posts: Post[] = []
+try {
+  await requireAdmin(Astro.request)
+  const pubIds = await redis.zrevrange<string[]>(keys.zPublished, 0, 50)
+  const draftIds = await redis.zrevrange<string[]>(keys.zDraft, 0, 50)
+  const allIds = [...draftIds, ...pubIds]
+  posts = (await Promise.all(allIds.map(id => getPostById(id)))).filter((p): p is Post => p !== null)
+} catch (e) {
+  if (e instanceof AuthError) {
+    if (e.status === 401) {
+      return Astro.redirect('/sign-in')
+    }
+    return new Response(e.message, { status: e.status })
+  }
+  return new Response('Server error', { status: 500 })
+}
+---
+<Layout>
+  <main class="p-6">
+    <h1 class="text-2xl mb-4">Admin</h1>
+    <a href="/admin/new" class="text-green-600">Write Post</a>
+    <ul class="mt-6 space-y-4">
+      {posts.map(p => (
+        <li key={p.id}>
+          <a href={`/admin/edit/${p.id}`} class="text-blue-600">{p.title}</a>
+          <span class="text-sm text-gray-500"> ({p.status})</span>
+        </li>
+      ))}
+    </ul>
+  </main>
+</Layout>

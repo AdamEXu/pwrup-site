@@ -1,0 +1,18 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import { getPostBySlug } from '../../lib/kv'
+import { marked } from 'marked'
+export const prerender = false
+const post = await getPostBySlug(Astro.params.slug!)
+if (!post) {
+  throw new Response(null, { status: 404 })
+}
+const html = marked.parse(post.content)
+---
+<Layout>
+  <main class="bg-black text-white min-h-screen p-6">
+    <h1 class="text-3xl mb-4">{post.title}</h1>
+    {post.headerImage && <img src={post.headerImage.url} alt={post.headerImage.alt} class="mb-4" />}
+    <article class="prose prose-invert max-w-none" set:html={html} />
+  </main>
+</Layout>
