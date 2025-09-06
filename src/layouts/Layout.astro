@@ -6,19 +6,13 @@ export interface Props {
 	title?: string;
 	description?: string;
 	image?: string;
-	author?: string;
-	publishedAt?: string;
-	tags?: string[];
 	canonical?: string;
 }
 
 const {
-	title = "PWRUP - Adam Xu's Blog",
-	description = "Personal blog about technology, development, and insights by Adam Xu",
-	image = "https://496fbe0bf0003addc2e0116caff5d215.r2.cloudflarestorage.com/default-og.jpg",
-	author = "Adam Xu",
-	publishedAt,
-	tags = [],
+	title = "Pinewood Robotics",
+	description = "Join Pinewood Robotics, FRC team 4765.",
+	image = "https://pinewood.one/Slide.jpg",
 	canonical
 } = Astro.props;
 
@@ -37,21 +31,15 @@ const fullUrl = canonical || `${siteUrl}${Astro.url.pathname}`;
 		<!-- SEO Meta Tags -->
 		<title>{title}</title>
 		<meta name="description" content={description} />
-		<meta name="author" content={author} />
-		{tags.length > 0 && <meta name="keywords" content={tags.join(', ')} />}
-		{publishedAt && <meta name="article:published_time" content={publishedAt} />}
 		<link rel="canonical" href={fullUrl} />
 
 		<!-- Open Graph / Facebook -->
-		<meta property="og:type" content="article" />
+		<meta property="og:type" content="website" />
 		<meta property="og:url" content={fullUrl} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:image" content={image} />
-		<meta property="og:site_name" content="PWRUP" />
-		{author && <meta property="article:author" content={author} />}
-		{publishedAt && <meta property="article:published_time" content={publishedAt} />}
-		{tags.map(tag => <meta property="article:tag" content={tag} />)}
+		<meta property="og:site_name" content="Pinewood Robotics" />
 
 		<!-- Twitter -->
 		<meta property="twitter:card" content="summary_large_image" />
@@ -59,32 +47,21 @@ const fullUrl = canonical || `${siteUrl}${Astro.url.pathname}`;
 		<meta property="twitter:title" content={title} />
 		<meta property="twitter:description" content={description} />
 		<meta property="twitter:image" content={image} />
-		<meta property="twitter:creator" content="@adamxu" />
 
 		<!-- Structured Data -->
 		<script type="application/ld+json">
 		{
 			JSON.stringify({
 				"@context": "https://schema.org",
-				"@type": "BlogPosting",
-				"headline": title,
+				"@type": "Organization",
+				"name": "Pinewood Robotics",
 				"description": description,
-				"image": image,
-				"author": {
-					"@type": "Person",
-					"name": author
-				},
-				"publisher": {
-					"@type": "Organization",
-					"name": "PWRUP",
-					"logo": {
-						"@type": "ImageObject",
-						"url": `${siteUrl}/favicon.svg`
-					}
-				},
 				"url": fullUrl,
-				"datePublished": publishedAt,
-				"keywords": tags.join(', ')
+				"logo": {
+					"@type": "ImageObject",
+					"url": `${siteUrl}/favicon.svg`
+				},
+				"sameAs": []
 			})
 		}
 		</script>
