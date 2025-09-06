@@ -72,12 +72,18 @@ export default function NavBar({
                     </a>
                 </div>
                 <div id="navright" className="flex space-x-6 items-center">
-                    <a href="/blog" className="text-white">
+                    <a
+                        href="/sign-up"
+                        className="text-white hover:text-[#70cd35] transition-colors duration-200"
+                    >
+                        Sign Up
+                    </a>
+                    {/* <a href="/blog" className="text-white">
                         Blog
                     </a>
                     <a href="/blog" className="text-white">
                         Socials
-                    </a>
+                    </a> */}
                 </div>
             </div>
         </div>

@@ -6,14 +6,16 @@ interface TypewriterEffectProps {
     delay?: number; // delay before starting
     className?: string;
     jitter?: number; // percentage of speed variation (0-100)
+    onComplete?: () => void; // callback when all words are typed
 }
 
 export function TypewriterEffect({
     words,
-    speed = 50,
+    speed = 100,
     delay = 0,
     className = "",
     jitter = 20,
+    onComplete,
 }: TypewriterEffectProps) {
     const [currentWordIndex, setCurrentWordIndex] = useState(0);
     const [currentCharIndex, setCurrentCharIndex] = useState(0);
@@ -22,7 +24,13 @@ export function TypewriterEffect({
     >([]);
 
     useEffect(() => {
-        if (currentWordIndex >= words.length) return;
+        if (currentWordIndex >= words.length) {
+            // All words are complete, trigger callback
+            if (onComplete) {
+                onComplete();
+            }
+            return;
+        }
 
         const currentWord = words[currentWordIndex];
         const timer = setTimeout(
