@@ -52,7 +52,7 @@ export default function NavBar({
     return (
         <div
             id="navbar"
-            className="bg-black/20 fixed w-screen z-10 p-4 backdrop-blur-lg transition-transform duration-300 ease-in-out"
+            className="bg-black/30 fixed w-screen left-0 right-0 z-10 p-6 backdrop-blur-lg transition-transform duration-300 ease-in-out"
             style={{
                 transform: isVisible ? "translateY(0)" : "translateY(-100%)",
                 top: 0,
@@ -67,16 +67,19 @@ export default function NavBar({
                         <img
                             src="/PWRUP_text.svg"
                             alt="PWRUP"
-                            className="h-4"
+                            className="h-8"
                         />
                     </a>
                 </div>
-                <div id="navright" className="flex space-x-6 items-center">
+                <div
+                    id="navright"
+                    className="flex space-x-6 items-center text-2xl"
+                >
                     <a
                         href="/sign-up"
-                        className="text-white hover:text-[#70cd35] transition-colors duration-200"
+                        className="text-white hover:text-[#70cd35] transition-colors duration-200 font-bold"
                     >
-                        Sign Up
+                        Register Interest
                     </a>
                     {/* <a href="/blog" className="text-white">
                         Blog

@@ -10,14 +10,14 @@ type BackgroundVideoProps = {
     hlsUrl?: string;
     /** Preferred first (e.g., WebM), with MP4 fallback */
     sources?: Source[];
-    /** Poster shown before playback */
-    poster?: string;
     /** Fade-in duration ms */
     fadeMs?: number;
     /** Delay before we even *mount* the video element (ms) to avoid competing with critical work */
     mountDelayMs?: number;
     /** Extra wrapper classes */
     className?: string;
+    /** External trigger to start the fade-in animation */
+    startFadeIn?: boolean;
 };
 
 /**
@@ -32,6 +32,7 @@ export default function BackgroundVideo({
     fadeMs = 500,
     mountDelayMs = 100,
     className = "",
+    startFadeIn = false,
 }: BackgroundVideoProps) {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -39,7 +40,11 @@ export default function BackgroundVideo({
 
     const [shouldMount, setShouldMount] = useState(false); // create the <video> at all?
     const [visible, setVisible] = useState(false); // in viewport?
-    const [ready, setReady] = useState(false); // fade in when can play
+    const [videoReady, setVideoReady] = useState(false); // video can play
+    const [shouldFadeIn, setShouldFadeIn] = useState(false); // external trigger received and video ready
+    const [fadeInComplete, setFadeInComplete] = useState(false); // fade-in animation finished
+    const [scrollOpacity, setScrollOpacity] = useState(1); // scroll-based opacity multiplier
+    const [scrollBlur, setScrollBlur] = useState(0); // scroll-based blur in pixels
 
     // Respect OS-level reduced motion: show poster only, never mount video
     const prefersReducedMotion =
@@ -104,6 +109,20 @@ export default function BackgroundVideo({
                 enableWorker: false, // Disable worker for better compatibility
                 lowLatencyMode: false,
                 backBufferLength: 90,
+                // Start with higher quality assumptions
+                startLevel: -1, // Let HLS.js auto-select, but with better defaults below
+                capLevelToPlayerSize: false, // Don't limit quality based on player size
+                maxLoadingDelay: 4,
+                maxBufferLength: 30,
+                maxBufferSize: 60 * 1000 * 1000, // 60MB buffer
+                // Aggressive bandwidth estimation for better initial quality
+                abrEwmaDefaultEstimate: 5000000, // Start assuming 5Mbps instead of default ~500kbps
+                abrEwmaSlowVoD: 3, // Faster adaptation for VoD content
+                abrEwmaFastVoD: 3,
+                abrMaxWithRealBitrate: false, // Don't be overly conservative
+                // Quality switching
+                abrBandWidthFactor: 0.7, // Less conservative bandwidth factor
+                abrBandWidthUpFactor: 0.7, // Less conservative for upward switches
             });
 
             hlsRef.current = hls;
@@ -111,13 +130,27 @@ export default function BackgroundVideo({
             hls.attachMedia(video);
 
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                // Force start with a higher quality level
+                const levels = hls.levels;
+                if (levels.length > 1) {
+                    // Start with at least 720p if available, or second-highest quality
+                    const targetLevel = levels.findIndex(
+                        (level) => level.height >= 720
+                    );
+                    if (targetLevel !== -1) {
+                        hls.startLevel = targetLevel;
+                    } else if (levels.length > 2) {
+                        // If no 720p, use second-highest quality
+                        hls.startLevel = levels.length - 2;
+                    }
+                }
                 video.play().catch(() => {});
             });
 
-            hls.on(Hls.Events.ERROR, (event, data) => {
+            hls.on(Hls.Events.ERROR, (_, data) => {
                 console.warn("HLS error:", data);
                 if (data.fatal) {
-                    setReady(true); // Show video even on error to avoid staying transparent
+                    setVideoReady(true); // Show video even on error to avoid staying transparent
                 }
             });
         } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
@@ -128,7 +161,7 @@ export default function BackgroundVideo({
             });
         } else {
             console.warn("HLS not supported, falling back to regular sources");
-            setReady(true);
+            setVideoReady(true);
         }
 
         return () => {
@@ -152,6 +185,70 @@ export default function BackgroundVideo({
         return () => document.removeEventListener("visibilitychange", onVis);
     }, [shouldMount, prefersReducedMotion]);
 
+    // Handle scroll-based opacity and blur effects
+    useEffect(() => {
+        if (prefersReducedMotion) return;
+
+        const handleScroll = () => {
+            const scrollY = window.scrollY;
+            const windowHeight = window.innerHeight;
+
+            // Calculate scroll progress from 0 to 1 (0vh to 100vh)
+            const scrollProgress = Math.min(scrollY / windowHeight, 1);
+
+            // Opacity multiplier: 1 at top, 0 at 100vh
+            const opacityMultiplier = 1 - scrollProgress;
+
+            // Blur: 0px at top, 32px at 100vh
+            const blurAmount = scrollProgress * 32;
+
+            setScrollOpacity(opacityMultiplier);
+            setScrollBlur(blurAmount);
+        };
+
+        // Initial calculation
+        handleScroll();
+
+        // Listen to both native scroll and Lenis scroll events
+        window.addEventListener("scroll", handleScroll);
+
+        // Also listen to Lenis scroll events if available
+        const checkLenis = () => {
+            const lenis = (window as any).lenis;
+            if (lenis) {
+                lenis.on("scroll", handleScroll);
+                return () => lenis.off("scroll", handleScroll);
+            }
+            return null;
+        };
+
+        // Try to attach Lenis listener immediately, or wait a bit for it to initialize
+        let lenisCleanup = checkLenis();
+        const lenisTimeout = setTimeout(() => {
+            if (!lenisCleanup) {
+                lenisCleanup = checkLenis();
+            }
+        }, 100);
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            if (lenisCleanup) lenisCleanup();
+            clearTimeout(lenisTimeout);
+        };
+    }, [prefersReducedMotion]);
+
+    // Handle external fade-in trigger combined with video readiness
+    useEffect(() => {
+        if (videoReady && startFadeIn) {
+            setShouldFadeIn(true);
+            // Mark fade-in as complete after the animation duration
+            const timer = setTimeout(() => {
+                setFadeInComplete(true);
+            }, fadeMs);
+            return () => clearTimeout(timer);
+        }
+    }, [videoReady, startFadeIn, fadeMs]);
+
     // Clean up GPU/memory on unmount
     useEffect(() => {
         return () => {
@@ -173,24 +270,6 @@ export default function BackgroundVideo({
         };
     }, []);
 
-    // If user prefers reduced motion, just render a poster image
-    if (prefersReducedMotion) {
-        return (
-            <div
-                ref={containerRef}
-                className={`fixed inset-0 -z-10 bg-black ${className}`}
-                aria-hidden="true"
-            >
-                <img
-                    src={poster}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover pointer-events-none select-none"
-                    loading="eager"
-                />
-            </div>
-        );
-    }
-
     return (
         <div
             ref={containerRef}
@@ -200,9 +279,16 @@ export default function BackgroundVideo({
             {shouldMount && visible && (
                 <video
                     ref={videoRef}
-                    className={`absolute inset-0 h-full w-full object-cover pointer-events-none transition-opacity duration-[${fadeMs}ms] ${
-                        ready ? "opacity-100" : "opacity-0"
-                    }`}
+                    className="absolute inset-0 h-full w-full object-cover pointer-events-none"
+                    style={{
+                        opacity: shouldFadeIn ? scrollOpacity : 0,
+                        filter: `blur(${scrollBlur}px)`,
+                        transform: `scale(${1 + scrollBlur * 0.05})`, // Scale up slightly to compensate for blur edge sampling
+                        transition:
+                            shouldFadeIn && !fadeInComplete
+                                ? `opacity ${fadeMs}ms ease-in-out`
+                                : "none",
+                    }}
                     // Keep it as a decorative, auto-playing background
                     tabIndex={-1}
                     muted
@@ -212,8 +298,8 @@ export default function BackgroundVideo({
                     // CRUCIAL: don’t grab the whole file up front
                     preload="metadata"
                     // nice UX while waiting
-                    onCanPlay={() => setReady(true)}
-                    onError={() => setReady(true)} // avoid staying transparent on error
+                    onCanPlay={() => setVideoReady(true)}
+                    onError={() => setVideoReady(true)} // avoid staying transparent on error
                     disableRemotePlayback
                 >
                     {/* Only use fallback sources if HLS is not supported */}

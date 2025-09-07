@@ -5,6 +5,7 @@ import { TypewriterEffect } from "./ui/simple-typewriter";
 import BackgroundVideo from "./BackgroundVideo";
 import FancyButton from "./FancyButton";
 import { useState, useEffect, useRef } from "react";
+import AboutRobotics from "./AboutRobotics";
 
 const words = [
     {
@@ -25,6 +26,8 @@ export default function Welcome() {
     useLenis();
     const [typewriterComplete, setTypewriterComplete] = useState(false);
     const [animationStarted, setAnimationStarted] = useState(false);
+    const [pinewoodAnimationStarted, setPinewoodAnimationStarted] =
+        useState(false);
     const pinewoodRef = useRef<HTMLDivElement>(null);
 
     // Start width reveal animation when typewriter completes
@@ -51,6 +54,9 @@ export default function Welcome() {
                     // Use a small delay to ensure transition is ready, then animate
                     setTimeout(() => {
                         if (pinewoodRef.current) {
+                            // Signal that the Pinewood animation is starting
+                            setPinewoodAnimationStarted(true);
+
                             pinewoodRef.current.style.width = `${fullWidth}px`;
 
                             // Set back to auto after animation completes (1000ms)
@@ -71,7 +77,10 @@ export default function Welcome() {
 
     return (
         <main>
-            <BackgroundVideo />
+            <BackgroundVideo
+                startFadeIn={pinewoodAnimationStarted}
+                fadeMs={1000}
+            />
             <div id="container" className="min-h-screen relative z-10">
                 <div id="content">
                     <div
@@ -103,13 +112,25 @@ export default function Welcome() {
                                             width: "0",
                                             textShadow:
                                                 "2px 2px 4px rgba(0, 0, 0, 0.4), 0px 0px 8px rgba(0, 0, 0, 0.2)",
-                                            textAlign: "right",
-                                            direction: "rtl", // Right-to-left text direction for right alignment
+                                            textAlign: REVEAL_CONFIG.textAlign,
+                                            direction:
+                                                REVEAL_CONFIG.textAlign ===
+                                                "right"
+                                                    ? "rtl"
+                                                    : "ltr",
                                             fontWeight: 500,
+                                            // For center alignment, we need to position the text properly during animation
+                                            ...(REVEAL_CONFIG.textAlign ===
+                                                "center" && {
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                textAlign: "left", // Override to left for proper animation
+                                                direction: "ltr", // Override to ltr for proper animation
+                                            }),
                                         }}
                                     >
                                         <span style={{ direction: "ltr" }}>
-                                            Pinewood Robotics
+                                            {REVEAL_CONFIG.text}
                                         </span>
                                     </div>
                                 </div>
@@ -117,7 +138,7 @@ export default function Welcome() {
                             <div className="flex justify-center flex-col sm:flex-row gap-8 w-[50%] mx-auto">
                                 <a href="/sign-up">
                                     <FancyButton className="w-full sm:w-[160px]">
-                                        Sign Up
+                                        Register Interest
                                     </FancyButton>
                                 </a>
                                 {/* <a href="/blog">
@@ -135,14 +156,7 @@ export default function Welcome() {
                         id="headerslide"
                         className="flex justify-center h-screen items-center"
                     >
-                        {/* <div className="absolute w-full h-[100vh] top-[60vh] backdrop-blur-lg"></div> */}
-                        <h1
-                            className="text-white drop-shadow-2xl text-center"
-                            style={{ fontSize: "6.9vw" }}
-                        >
-                            Another test
-                            {/* <TypewriterEffectSmooth words={words} /> */}
-                        </h1>
+                        <AboutRobotics />
                     </div>
                 </div>
             </div>
