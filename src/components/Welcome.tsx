@@ -6,6 +6,7 @@ import BackgroundVideo from "./BackgroundVideo";
 import FancyButton from "./FancyButton";
 import { useState, useEffect, useRef } from "react";
 import AboutRobotics from "./AboutRobotics";
+import Positions from "./Positions";
 
 const words = [
     {
@@ -152,12 +153,8 @@ export default function Welcome() {
                             </div>
                         </div>
                     </div>
-                    <div
-                        id="headerslide"
-                        className="flex justify-center h-screen items-center"
-                    >
-                        <AboutRobotics />
-                    </div>
+                    <AboutRobotics />
+                    <Positions />
                 </div>
             </div>
         </main>

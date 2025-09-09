@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 export default function AboutRobotics() {
     return (
-        <div className="h-full w-full p-6 pt-20">
+        <div className="w-full p-6">
             <h1 className="text-white drop-shadow-2xl text-center text-6xl md:text-8xl">
                 Why join robotics?
             </h1>
@@ -29,7 +29,12 @@ export default function AboutRobotics() {
                     >
                         Robotics is:
                     </p>
-                    <ul className="list-disc list-inside text-left mt-4 pl-4 text-2xl">
+                    <ul
+                        className="list-disc list-inside text-left mt-4 pl-4 text-2xl"
+                        style={{
+                            lineHeight: 1.5,
+                        }}
+                    >
                         <li
                             className="hover:text-[#70cd35] hover:translate-x-2"
                             style={{
@@ -77,13 +82,14 @@ export default function AboutRobotics() {
                         </li>
                     </ul>
                 </div>
-                <div className="text-white drop-shadow-2xl text-center text-2xl w-auto w-full lg:w-1/2 mx-auto lg:mx-0">
+                <div className="text-white drop-shadow-2xl text-center text-2xl w-full lg:w-1/2 mx-auto lg:mx-0 h-full">
                     <img
                         src="/Reefscape-Robot.png"
                         alt="Robotics"
                         style={{
-                            height: "80%",
+                            height: "60%",
                             width: "auto",
+                            margin: "auto",
                         }}
                     />
                     <div>
