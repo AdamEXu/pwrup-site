@@ -77,6 +77,8 @@ export default function NavBar({
                 >
                     <a
                         href="/sign-up"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-white hover:text-[#70cd35] transition-colors duration-200 font-bold"
                     >
                         Register Interest

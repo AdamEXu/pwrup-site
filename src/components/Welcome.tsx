@@ -29,7 +29,11 @@ export default function Welcome() {
     const [animationStarted, setAnimationStarted] = useState(false);
     const [pinewoodAnimationStarted, setPinewoodAnimationStarted] =
         useState(false);
+    const [textScale, setTextScale] = useState(1.5);
+    const [weAreWidth, setWeAreWidth] = useState("auto");
+    const [scrollHandlerEnabled, setScrollHandlerEnabled] = useState(false);
     const pinewoodRef = useRef<HTMLDivElement>(null);
+    const weAreRef = useRef<HTMLDivElement>(null);
 
     // Start width reveal animation when typewriter completes
     useEffect(() => {
@@ -58,6 +62,9 @@ export default function Welcome() {
                             // Signal that the Pinewood animation is starting
                             setPinewoodAnimationStarted(true);
 
+                            // Start scale animation at the same time
+                            setTextScale(1);
+
                             pinewoodRef.current.style.width = `${fullWidth}px`;
 
                             // Set back to auto after animation completes (1000ms)
@@ -68,6 +75,8 @@ export default function Welcome() {
                                     pinewoodRef.current.style.transition =
                                         "none";
                                 }
+                                // Enable scroll handler after initial animation completes
+                                setScrollHandlerEnabled(true);
                             }, 1000);
                         }
                     }, 50); // Small delay to ensure transition is applied
@@ -76,13 +85,70 @@ export default function Welcome() {
         }
     }, [typewriterComplete, animationStarted]);
 
+    // Scroll-based animation for "We are" text
+    useEffect(() => {
+        if (!scrollHandlerEnabled) {
+            // Reset width to auto when scroll handler is disabled
+            setWeAreWidth("auto");
+            return;
+        }
+
+        // Ease-in-out function for smooth curve
+        const easeInOut = (t: number) => {
+            return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        };
+
+        const handleScroll = () => {
+            if (!weAreRef.current) return;
+
+            const scrollY = window.scrollY;
+            const windowHeight = window.innerHeight;
+
+            // Calculate linear scroll progress (0 to 1)
+            const linearProgress = Math.min(scrollY / windowHeight, 1);
+
+            // Apply easing curve for smoother animation
+            const scrollProgress = easeInOut(linearProgress) * 4;
+
+            // Get the natural width of "We are" text
+            const tempStyle = weAreRef.current.style.width;
+            weAreRef.current.style.width = "auto";
+            const fullWidth = weAreRef.current.offsetWidth;
+            weAreRef.current.style.width = tempStyle;
+
+            // Calculate width: start at full width, go to 0
+            const currentWidth = Math.max(fullWidth * (1 - scrollProgress), 0);
+            setWeAreWidth(`${currentWidth}px`);
+
+            // Calculate scale: start at 1, go to 1.5
+            const currentScale = Math.min(1 + 0.5 * scrollProgress, 1.5);
+            setTextScale(currentScale);
+        };
+
+        // Add scroll and resize listeners
+        window.addEventListener("scroll", handleScroll);
+        window.addEventListener("resize", handleScroll);
+
+        // Initial calculation
+        handleScroll();
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", handleScroll);
+        };
+    }, [scrollHandlerEnabled]);
+
     return (
-        <main>
+        <main style={{ overflowX: "hidden" }}>
             <BackgroundVideo
                 startFadeIn={pinewoodAnimationStarted}
                 fadeMs={1000}
             />
-            <div id="container" className="min-h-screen relative z-10">
+            <div
+                id="container"
+                className="min-h-screen relative z-10"
+                style={{ overflowX: "hidden" }}
+            >
                 <div id="content">
                     <div
                         // id="headerslide"
@@ -91,12 +157,25 @@ export default function Welcome() {
                         <div className="flex flex-col space-y-4 w-full">
                             <div
                                 className="text-white drop-shadow-2xl text-center relative"
-                                style={{ fontSize: "6.9vw" }}
+                                style={{
+                                    fontSize: "min(6.9vw, 120px)",
+                                    transform: `scale(${textScale})`,
+                                    transition: scrollHandlerEnabled
+                                        ? "none"
+                                        : "transform 1000ms ease-out",
+                                    transformOrigin: "center",
+                                }}
                             >
                                 {/* Container for the entire text */}
                                 <div className="flex justify-center items-center min-h-[1.2em]">
                                     {/* "We are" - types out first */}
-                                    <div>
+                                    <div
+                                        ref={weAreRef}
+                                        className="overflow-hidden whitespace-nowrap"
+                                        style={{
+                                            width: weAreWidth,
+                                        }}
+                                    >
                                         <TypewriterEffect
                                             words={words}
                                             onComplete={() =>
@@ -137,7 +216,11 @@ export default function Welcome() {
                                 </div>
                             </div>
                             <div className="flex justify-center flex-col sm:flex-row gap-8 w-[50%] mx-auto">
-                                <a href="/sign-up">
+                                <a
+                                    href="/sign-up"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
                                     <FancyButton className="w-full sm:w-[160px]">
                                         Register Interest
                                     </FancyButton>

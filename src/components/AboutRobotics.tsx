@@ -87,9 +87,10 @@ export default function AboutRobotics() {
                         src="/Reefscape-Robot.png"
                         alt="Robotics"
                         style={{
-                            height: "60%",
+                            maxHeight: "500px",
                             width: "auto",
                             margin: "auto",
+                            objectFit: "contain",
                         }}
                     />
                     <div>

@@ -8,6 +8,7 @@ export default function Position({
     requirements,
     image,
     direction = "left",
+    id,
 }: {
     title: string;
     description: string;
@@ -15,6 +16,7 @@ export default function Position({
     requirements: string[];
     image: string;
     direction?: "left" | "right";
+    id?: string;
 }) {
     const imageRef = useRef<HTMLImageElement>(null);
     const [verticalTilt, setVerticalTilt] = useState(0);
@@ -86,7 +88,11 @@ export default function Position({
                         <li key={responsibility}>{responsibility}</li>
                     ))}
                 </ul>
-                <a href="/sign-up">
+                <a
+                    href={`/sign-up?role=${id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
                     <FancyButton className="mt-8 w-full">Apply</FancyButton>
                 </a>
             </div>

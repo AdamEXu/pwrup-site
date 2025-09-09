@@ -17,6 +17,7 @@ export default function Positions() {
                 ]}
                 requirements={[]}
                 image="/business_role.svg"
+                id="business"
             />
             <Position
                 title="Marketing"
@@ -27,8 +28,9 @@ export default function Positions() {
                     "Plan and execute events",
                 ]}
                 requirements={[]}
-                image="/business_role.svg"
+                image="/marketing_role.svg"
                 direction="right"
+                id="marketing"
             />
         </div>
     );
