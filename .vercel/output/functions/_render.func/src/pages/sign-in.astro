@@ -1,0 +1,32 @@
+---
+import PostHogLayout from '../layouts/PostHogLayout.astro';
+---
+
+<PostHogLayout>
+  <main class="bg-black text-white min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full p-6">
+      <h1 class="text-3xl mb-6 text-center">Sign In</h1>
+      <div id="clerk-sign-in"></div>
+    </div>
+  </main>
+
+  <script>
+    // Initialize Clerk sign-in component
+    import { Clerk } from '@clerk/clerk-js';
+    
+    const clerkPubKey = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
+    
+    if (clerkPubKey) {
+      const clerk = new Clerk(clerkPubKey);
+      await clerk.load();
+      
+      const signInDiv = document.getElementById('clerk-sign-in');
+      if (signInDiv) {
+        clerk.mountSignIn(signInDiv, {
+          redirectUrl: '/admin',
+          signUpUrl: '/sign-up'
+        });
+      }
+    }
+  </script>
+</PostHogLayout>
