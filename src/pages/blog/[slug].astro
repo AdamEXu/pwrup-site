@@ -1,4 +1,5 @@
 ---
+import PostHogLayout from '../../layouts/PostHogLayout.astro'
 import Layout from '../../layouts/Layout.astro'
 import BlogPostPage from '../../components/BlogPostPage.tsx'
 import { getPostBySlug } from '../../lib/kv'
@@ -18,13 +19,15 @@ const seoAuthor = post.author.name
 const seoPublishedAt = post.publishedAt
 const seoTags = post.tags
 ---
-<Layout
-  title={seoTitle}
-  description={seoDescription}
-  image={seoImage}
-  author={seoAuthor}
-  publishedAt={seoPublishedAt}
-  tags={seoTags}
->
-  <BlogPostPage post={post} content={html} client:load />
-</Layout>
+<PostHogLayout>
+  <Layout
+    title={seoTitle}
+    description={seoDescription}
+    image={seoImage}
+    author={seoAuthor}
+    publishedAt={seoPublishedAt}
+    tags={seoTags}
+  >
+    <BlogPostPage post={post} content={html} client:load />
+  </Layout>
+</PostHogLayout>

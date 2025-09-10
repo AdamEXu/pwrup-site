@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../layouts/Layout.astro'
+import PostHogLayout from '../../../layouts/PostHogLayout.astro'
 import { getPostById } from '../../../lib/kv'
 import { requireAdmin, AuthError } from '../../../lib/auth'
 export const prerender = false
@@ -19,114 +20,116 @@ if (!post) {
   throw new Response(null, { status: 404 })
 }
 ---
-<Layout>
-  <div class="max-w-2xl mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-4">Edit Post</h1>
-    <form id="post-form" class="space-y-4">
-      <input id="title" type="text" value={post.title} placeholder="Title" class="w-full p-2 border" required />
-      <input id="slug" type="text" value={post.slug} placeholder="Slug" class="w-full p-2 border" />
-      <textarea id="description" placeholder="Description" class="w-full p-2 border" required>{post.description}</textarea>
-      <input id="tags" type="text" value={(post.tags || []).join(', ')} placeholder="Tags (comma separated)" class="w-full p-2 border" />
-      <select id="status" class="w-full p-2 border">
-        <option value="draft" selected={post.status === 'draft'}>Draft</option>
-        <option value="published" selected={post.status === 'published'}>Published</option>
-      </select>
-      <input id="readingTime" type="number" value={post.readingTime} placeholder="Reading Time (min)" class="w-full p-2 border" />
-      <textarea id="content" placeholder="Markdown content" class="w-full p-2 border h-48" required>{post.content}</textarea>
-      <div>
-        <h2 class="font-semibold">Preview</h2>
-        <div id="preview" class="border p-2 min-h-[100px]"></div>
+<PostHogLayout>
+  <Layout>
+    <div class="max-w-2xl mx-auto p-4">
+      <h1 class="text-2xl font-bold mb-4">Edit Post</h1>
+      <form id="post-form" class="space-y-4">
+        <input id="title" type="text" value={post.title} placeholder="Title" class="w-full p-2 border" required />
+        <input id="slug" type="text" value={post.slug} placeholder="Slug" class="w-full p-2 border" />
+        <textarea id="description" placeholder="Description" class="w-full p-2 border" required>{post.description}</textarea>
+        <input id="tags" type="text" value={(post.tags || []).join(', ')} placeholder="Tags (comma separated)" class="w-full p-2 border" />
+        <select id="status" class="w-full p-2 border">
+          <option value="draft" selected={post.status === 'draft'}>Draft</option>
+          <option value="published" selected={post.status === 'published'}>Published</option>
+        </select>
+        <input id="readingTime" type="number" value={post.readingTime} placeholder="Reading Time (min)" class="w-full p-2 border" />
+        <textarea id="content" placeholder="Markdown content" class="w-full p-2 border h-48" required>{post.content}</textarea>
+        <div>
+          <h2 class="font-semibold">Preview</h2>
+          <div id="preview" class="border p-2 min-h-[100px]"></div>
+        </div>
+        <button type="submit" class="p-2 bg-blue-600 text-white rounded">Update Post</button>
+      </form>
+      <div class="flex gap-4 mt-4">
+        <button id="delete-btn" class="p-2 bg-red-600 text-white rounded">Delete Post</button>
       </div>
-      <button type="submit" class="p-2 bg-blue-600 text-white rounded">Update Post</button>
-    </form>
-    <div class="flex gap-4 mt-4">
-      <button id="delete-btn" class="p-2 bg-red-600 text-white rounded">Delete Post</button>
-    </div>
-    <script type="module" define:vars={{ postId: post.id }}>
-      const POST_ID = postId;
-      const form = document.getElementById('post-form');
-      const title = document.getElementById('title');
-      const slug = document.getElementById('slug');
-      const description = document.getElementById('description');
-      const tags = document.getElementById('tags');
-      const status = document.getElementById('status');
-      const readingTime = document.getElementById('readingTime');
-      const content = document.getElementById('content');
-      const preview = document.getElementById('preview');
+      <script type="module" define:vars={{ postId: post.id }}>
+        const POST_ID = postId;
+        const form = document.getElementById('post-form');
+        const title = document.getElementById('title');
+        const slug = document.getElementById('slug');
+        const description = document.getElementById('description');
+        const tags = document.getElementById('tags');
+        const status = document.getElementById('status');
+        const readingTime = document.getElementById('readingTime');
+        const content = document.getElementById('content');
+        const preview = document.getElementById('preview');
 
-      // Markdown preview
-      async function renderPreview() {
-        if (!content.value) {
-          preview.innerHTML = '<p class="text-gray-500">Preview will appear here...</p>';
-          return;
-        }
-        try {
-          // Use a simpler markdown parser or basic HTML conversion
-          let html = content.value
-            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-            .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-            .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
-            .replace(/\*(.*)\*/gim, '<em>$1</em>')
-            .replace(/\n/gim, '<br>');
-          preview.innerHTML = html;
-        } catch (error) {
-          preview.innerHTML = '<p class="text-red-500">Error rendering preview</p>';
-        }
-      }
-      content.addEventListener('input', renderPreview);
-
-      // Form submission
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const body = {
-          title: title.value,
-          slug: slug.value,
-          description: description.value,
-          tags: tags.value.split(',').map(t => t.trim()).filter(Boolean),
-          status: status.value,
-          readingTime: readingTime.value ? parseInt(readingTime.value) : undefined,
-          content: content.value
-        };
-
-        try {
-          const res = await fetch(`/api/posts/${POST_ID}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-          });
-
-          if (res.ok) {
-            window.location.href = '/admin';
-          } else {
-            const error = await res.text();
-            alert('Error updating post: ' + error);
+        // Markdown preview
+        async function renderPreview() {
+          if (!content.value) {
+            preview.innerHTML = '<p class="text-gray-500">Preview will appear here...</p>';
+            return;
           }
-        } catch (error) {
-          alert('Error updating post: ' + error.message);
-        }
-      });
-
-      // Delete functionality
-      document.getElementById('delete-btn').addEventListener('click', async () => {
-        if (confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
           try {
-            const res = await fetch(`/api/posts/${POST_ID}`, { method: 'DELETE' });
+            // Use a simpler markdown parser or basic HTML conversion
+            let html = content.value
+              .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+              .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+              .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+              .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+              .replace(/\*(.*)\*/gim, '<em>$1</em>')
+              .replace(/\n/gim, '<br>');
+            preview.innerHTML = html;
+          } catch (error) {
+            preview.innerHTML = '<p class="text-red-500">Error rendering preview</p>';
+          }
+        }
+        content.addEventListener('input', renderPreview);
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const body = {
+            title: title.value,
+            slug: slug.value,
+            description: description.value,
+            tags: tags.value.split(',').map(t => t.trim()).filter(Boolean),
+            status: status.value,
+            readingTime: readingTime.value ? parseInt(readingTime.value) : undefined,
+            content: content.value
+          };
+
+          try {
+            const res = await fetch(`/api/posts/${POST_ID}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(body)
+            });
+
             if (res.ok) {
               window.location.href = '/admin';
             } else {
               const error = await res.text();
-              alert('Error deleting post: ' + error);
+              alert('Error updating post: ' + error);
             }
           } catch (error) {
-            alert('Error deleting post: ' + error.message);
+            alert('Error updating post: ' + error.message);
           }
-        }
-      });
+        });
 
-      // Initial preview render
-      renderPreview();
-    </script>
-  </div>
-</Layout>
+        // Delete functionality
+        document.getElementById('delete-btn').addEventListener('click', async () => {
+          if (confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+            try {
+              const res = await fetch(`/api/posts/${POST_ID}`, { method: 'DELETE' });
+              if (res.ok) {
+                window.location.href = '/admin';
+              } else {
+                const error = await res.text();
+                alert('Error deleting post: ' + error);
+              }
+            } catch (error) {
+              alert('Error deleting post: ' + error.message);
+            }
+          }
+        });
+
+        // Initial preview render
+        renderPreview();
+      </script>
+    </div>
+  </Layout>
+</PostHogLayout>
