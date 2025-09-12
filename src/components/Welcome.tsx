@@ -7,6 +7,8 @@ import FancyButton from "./FancyButton";
 import { useState, useEffect, useRef } from "react";
 import AboutRobotics from "./AboutRobotics";
 import Positions from "./Positions";
+import Clips from "./Clips";
+import PEARL from "./PEARL";
 
 const words = [
     {
@@ -178,6 +180,8 @@ export default function Welcome() {
                                     >
                                         <TypewriterEffect
                                             words={words}
+                                            speed={100}
+                                            jitter={0}
                                             onComplete={() =>
                                                 setTypewriterComplete(true)
                                             }
@@ -238,6 +242,8 @@ export default function Welcome() {
                     </div>
                     <AboutRobotics />
                     <Positions />
+                    <Clips />
+                    <PEARL />
                 </div>
             </div>
         </main>

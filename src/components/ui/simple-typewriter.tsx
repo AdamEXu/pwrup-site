@@ -78,6 +78,8 @@ export function TypewriterEffect({
             },
             currentCharIndex === 0 && currentWordIndex === 0
                 ? delay
+                : jitter === 0
+                ? speed
                 : speed + (Math.random() - 0.5) * 2 * ((speed * jitter) / 100)
         );
 

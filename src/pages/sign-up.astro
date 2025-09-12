@@ -2,6 +2,10 @@
 // Redirect /sign-up to Google Forms
 export const prerender = false;
 
+if (Astro.url.searchParams.get('internal') === "true") {
+    return Astro.redirect('https://docs.google.com/forms/d/e/1FAIpQLScxtKLT8RRvoEpeMEobD0_nWtot29ryoKWw9naw2nxv6lT9VQ/viewform?usp=header');
+}
+
 if (Astro.url.searchParams.get('role')) {
     const role = Astro.url.searchParams.get('role');
     const rolesMap: Record<string, string> = {
@@ -13,7 +17,7 @@ if (Astro.url.searchParams.get('role')) {
 
     if (role && rolesMap[role]) {
         const roleName = rolesMap[role];
-        return Astro.redirect(`https://docs.google.com/forms/d/e/1FAIpQLScjKOXG0H6Z3s7fO50m3nFT2N5nLKwqV8_ex_FuLvzWRhGUpg/viewform?usp=pp_url&entry.131527022=${roleName}`);
+        return Astro.redirect(`https://docs.google.com/forms/d/e/1FAIpQLSfGztcsv36DX8pSdFCm8Tai8MZD1ZnjdFHDCkIhgWYq6FIVeg/viewform?usp=pp_url&entry.1824823162=${roleName}`);
     }
 }
 
