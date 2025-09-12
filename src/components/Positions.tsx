@@ -41,7 +41,7 @@ export default function Positions() {
                     "Maintain robotics website",
                 ]}
                 requirements={[]}
-                image="/marketing_role.svg"
+                image="/Code.png"
                 direction="right"
                 id="software"
             />
@@ -54,7 +54,7 @@ export default function Positions() {
                     "Design and 3D print custom parts",
                 ]}
                 requirements={[]}
-                image="/business_role.svg"
+                image="/Window.png"
                 id="business"
             />
         </div>
