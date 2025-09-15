@@ -1,6 +1,5 @@
 import NavBar from "./NavBar";
 import { useLenis } from "../hooks/useLenis";
-import { TypewriterEffectSmooth } from "./ui/typewriter-effect";
 import { TypewriterEffect } from "./ui/simple-typewriter";
 import BackgroundVideo from "./BackgroundVideo";
 import FancyButton from "./FancyButton";

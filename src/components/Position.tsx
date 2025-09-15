@@ -101,6 +101,7 @@ export default function Position({
                     ref={imageRef}
                     src={image}
                     alt="A spreadsheet"
+                    loading="lazy"
                     style={{
                         margin: "auto",
                         transform: `perspective(1000px) rotateY(${

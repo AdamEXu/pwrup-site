@@ -84,7 +84,7 @@ export default function AboutRobotics() {
                 </div>
                 <div className="text-white drop-shadow-2xl text-center text-2xl w-full lg:w-1/2 mx-auto lg:mx-0 h-full">
                     <img
-                        src="/Reefscape-Robot.png"
+                        src="/Reefscape-Robot.webp"
                         alt="Robotics"
                         style={{
                             maxHeight: "500px",
@@ -92,6 +92,7 @@ export default function AboutRobotics() {
                             margin: "auto",
                             objectFit: "contain",
                         }}
+                        loading="lazy"
                     />
                     <div>
                         <p

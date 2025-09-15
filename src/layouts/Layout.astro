@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import NavBar from '../components/NavBar.tsx';
+import PostHog from '../components/posthog.astro';
 
 export interface Props {
 	title?: string;
@@ -48,28 +49,17 @@ const fullUrl = canonical || `${siteUrl}${Astro.url.pathname}`;
 		<meta property="twitter:description" content={description} />
 		<meta property="twitter:image" content={image} />
 
-		<!-- Structured Data -->
-		<script type="application/ld+json">
-		{
-			JSON.stringify({
-				"@context": "https://schema.org",
-				"@type": "Organization",
-				"name": "Pinewood Robotics",
-				"description": description,
-				"url": fullUrl,
-				"logo": {
-					"@type": "ImageObject",
-					"url": `${siteUrl}/favicon.svg`
-				},
-				"sameAs": []
-			})
-		}
-		</script>
 
-		<!-- Google Fonts -->
+
+		<!-- Google Fonts - Optimized -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+		<!-- Preload the most critical font weights -->
+		<link rel="preload" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;700&family=Red+Hat+Display:wght@300;400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;700&family=Red+Hat+Display:wght@300;400;500;700&display=swap"></noscript>
+
+		<!-- PostHog Analytics -->
+		<PostHog />
 	</head>
 	<body>
 		<div style="z-index: 100; position: fixed; top: 0; left: 0; width: 100%;">

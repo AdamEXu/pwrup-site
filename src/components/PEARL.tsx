@@ -12,16 +12,18 @@ export default function PEARL() {
             <div className="flex flex-col lg:flex-row gap-8 mt-10">
                 <div className="text-white drop-shadow-2xl text-center text-2xl w-full lg:w-1/2">
                     <img
-                        src="/PEARL_1.jpeg"
+                        src="/PEARL_1.webp"
                         alt="PEARL"
                         className="w-full h-auto"
+                        loading="lazy"
                     />
                 </div>
                 <div className="text-white drop-shadow-2xl text-center text-2xl w-full lg:w-1/2">
                     <img
-                        src="/PEARL_2.jpeg"
+                        src="/PEARL_2.webp"
                         alt="PEARL"
                         className="w-full h-auto"
+                        loading="lazy"
                     />
                 </div>
             </div>
