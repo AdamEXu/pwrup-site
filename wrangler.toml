@@ -1,0 +1,52 @@
+name = "pwrup-site"
+compatibility_date = "2024-12-20"
+
+[env.production]
+name = "pwrup-site"
+
+# Static site configuration - serve everything from dist/ as static assets
+# No server-side logic, just static file serving
+pages_build_output_dir = "dist"
+
+# Optional: Custom domain configuration (uncomment and modify as needed)
+# routes = [
+#   { pattern = "pinewood.one", custom_domain = true }
+# ]
+
+# Environment variables (if needed)
+# [vars]
+# ENVIRONMENT = "production"
+
+# Optional: Headers for better performance and security
+[[headers]]
+for = "/*"
+[headers.values]
+"X-Frame-Options" = "DENY"
+"X-Content-Type-Options" = "nosniff"
+"Referrer-Policy" = "strict-origin-when-cross-origin"
+
+# Cache static assets for better performance
+[[headers]]
+for = "/_astro/*"
+[headers.values]
+"Cache-Control" = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "*.webp"
+[headers.values]
+"Cache-Control" = "public, max-age=31536000"
+
+[[headers]]
+for = "*.svg"
+[headers.values]
+"Cache-Control" = "public, max-age=31536000"
+
+[[headers]]
+for = "*.css"
+[headers.values]
+"Cache-Control" = "public, max-age=31536000"
+
+[[headers]]
+for = "*.js"
+[headers.values]
+"Cache-Control" = "public, max-age=31536000"
