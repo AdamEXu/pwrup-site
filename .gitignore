@@ -23,8 +23,9 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-# vercel
-.vercel/
+# cloudflare
+.wrangler/
+wrangler.toml.bak
 
 # vscode
 .vscode/
