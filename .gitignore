@@ -23,6 +23,9 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
+# vercel (legacy)
+.vercel/
+
 # cloudflare
 .wrangler/
 wrangler.toml.bak
