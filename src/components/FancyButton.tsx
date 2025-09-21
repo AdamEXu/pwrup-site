@@ -1,5 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
-import { CanvasRevealEffect } from "./ui/canvas-reveal-effect";
+import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
+
+// Lazy load the CanvasRevealEffect to reduce initial bundle size
+const CanvasRevealEffect = lazy(() =>
+    import("./ui/canvas-reveal-effect").then((module) => ({
+        default: module.CanvasRevealEffect,
+    }))
+);
 
 interface FancyButtonProps {
     children: React.ReactNode;
@@ -32,8 +38,8 @@ export default function FancyButton({
         // Base: 1.0 at 400px width
         // Scale factor: width / 400
         // Cap between 0.5 (minimum) and 10 (maximum for ultrawide)
-        const scaleFactor = width / 400;
-        return Math.max(0.5, Math.min(10, scaleFactor));
+        const scaleFactor = (width / 400) * 2;
+        return Math.max(1, Math.min(30, scaleFactor));
     };
 
     useEffect(() => {
@@ -103,14 +109,16 @@ export default function FancyButton({
                         isAnimatingOut ? "opacity-0" : "opacity-100"
                     }`}
                 >
-                    <CanvasRevealEffect
-                        animationSpeed={animationSpeed}
-                        containerClassName="bg-transparent"
-                        colors={[[112, 205, 53]]} // brand-lime-green in RGB
-                        dotSize={2}
-                        showGradient={false}
-                        revealCenter={revealCenter || undefined}
-                    />
+                    <Suspense fallback={<div />}>
+                        <CanvasRevealEffect
+                            animationSpeed={animationSpeed}
+                            containerClassName="bg-transparent"
+                            colors={[[112, 205, 53]]} // brand-lime-green in RGB
+                            dotSize={2}
+                            showGradient={false}
+                            revealCenter={revealCenter || undefined}
+                        />
+                    </Suspense>
                 </div>
             )}
             <span className="text-[#70cd35] relative z-10">{children}</span>
