@@ -21,6 +21,9 @@ if [ $? -eq 0 ]; then
     echo ""
     echo "📋 Option 2: Use the deploy script"
     echo "   1. Run: pnpm deploy"
+    echo ""
+    echo "🧪 After deployment, test compression:"
+    echo "   node test-compression.js https://your-site.workers.dev"
 else
     echo "❌ Build failed!"
     exit 1
