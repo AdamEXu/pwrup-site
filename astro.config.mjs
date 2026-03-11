@@ -13,4 +13,7 @@ export default defineConfig({
             entrypoint: "astro/assets/services/sharp",
         },
     },
+    redirects: {
+        "/cadsfc-map": "https://maps.app.goo.gl/BF2mQuYUAUtgCkUm7"
+    }
 });

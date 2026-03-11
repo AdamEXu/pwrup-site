@@ -8,6 +8,7 @@ import AboutRobotics from "./AboutRobotics";
 import Positions from "./Positions";
 import Clips from "./Clips";
 import PEARL from "./PEARL";
+import Footer from "./Footer";
 
 const words = [
     {
@@ -242,7 +243,8 @@ export default function Welcome() {
                     <AboutRobotics />
                     <Positions />
                     <Clips />
-                    <PEARL />
+                    {/* <PEARL /> */}
+                    <Footer />
                 </div>
             </div>
         </main>

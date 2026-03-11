@@ -1,5 +1,12 @@
 name = "pwrup-site"
+account_id = "007109207807e3fa4cf11bf6090879da"
 compatibility_date = "2024-12-20"
+
+# Routes for pinewoodrobotics.org
+routes = [
+  { pattern = "pinewoodrobotics.org", zone_name = "pinewoodrobotics.org" },
+  { pattern = "www.pinewoodrobotics.org", zone_name = "pinewoodrobotics.org" }
+]
 
 # Static site configuration - serve everything from dist/ as static assets
 [assets]
