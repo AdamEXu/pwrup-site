@@ -4,7 +4,7 @@ This is the official website for Pinewood Robotics, FRC team 4765. Built with mo
 
 ## 🚀 Features
 
--   **Modern Tech Stack**: Built with Astro 5 and React 19
+-   **Modern Tech Stack**: Built with Astro 7 and React 19
 -   **Smooth Animations**: Lenis smooth scrolling and custom text animations
 -   **3D Graphics**: Three.js integration with React Three Fiber
 -   **Responsive Design**: Mobile-first approach with Tailwind CSS
@@ -76,8 +76,7 @@ pwrup-site/
 │   │   └── utils.ts      # General utilities
 │   ├── pages/            # Astro pages
 │   │   ├── index.astro   # Home page
-│   │   ├── sign-up.astro # Registration page
-│   │   └── tech-club.astro # Tech club redirect
+│   │   └── sign-up.astro # Registration page
 │   └── styles/           # Global styles
 │       └── global.css    # Global CSS
 ├── astro.config.mjs      # Astro configuration
@@ -91,8 +90,8 @@ pwrup-site/
 
 ### Prerequisites
 
--   **Node.js** (v18 or higher)
--   **PNPM** (recommended package manager)
+-   **Node.js** (v22.12 or higher; Astro 7 requires `>=22.12.0`)
+-   **pnpm** 9.12.3 or later (pinned via `packageManager`)
 
 ### Installation
 
@@ -232,7 +231,7 @@ const REVEAL_CONFIG = {
     pnpm deploy
     ```
 
-The site is configured for static deployment with optimized caching headers for assets.
+The site is configured for static deployment. Cloudflare Workers Builds must use Node.js 22.12 or later (`.nvmrc` and `package.json` `engines.node`). Cache headers for hashed assets live in `public/_headers`. Production custom domains (`pinewoodrobotics.org`) are under `[env.production]` in `wrangler.toml`.
 
 ### Alternative Deployment Options
 
