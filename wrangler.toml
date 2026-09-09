@@ -1,13 +1,16 @@
 name = "pwrup-site"
+main = "src/worker.ts"
 # Build-time Node is pinned via package.json engines and .nvmrc (>=22.12).
 # Do not set a top-level account_id: Workers Builds authenticates as the
 # Git-connected Cloudflare account (Adam), while pinewoodrobotics.org
 # production lives on the Pinewood Robotics account.
-compatibility_date = "2024-12-20"
+compatibility_date = "2026-07-08"
 
-# Static site configuration - serve everything from dist/ as static assets
 [assets]
 directory = "./dist"
+binding = "ASSETS"
+# Only the redirect routes hit the Worker; everything else is served straight from the asset cache.
+run_worker_first = ["/sign-up", "/sign-up/", "/submit", "/submit/", "/tech-club", "/tech-club/"]
 
 # Production custom domains. Deploy with:
 #   CLOUDFLARE_ACCOUNT_ID=007109207807e3fa4cf11bf6090879da wrangler deploy --env production
