@@ -23,6 +23,7 @@ const words = [
 const REVEAL_CONFIG = {
     textAlign: "right" as "left" | "center" | "right", // Change this to control animation direction
     text: "PWRUP",
+    durationMs: 500,
 };
 
 export default function Welcome() {
@@ -55,7 +56,7 @@ export default function Welcome() {
 
                     // Set transition and force another reflow
                     pinewoodRef.current.style.transition =
-                        "width 1000ms ease-out";
+                        `width ${REVEAL_CONFIG.durationMs}ms ease-out`;
                     pinewoodRef.current.offsetHeight; // Force reflow
 
                     // Use a small delay to ensure transition is ready, then animate
@@ -69,7 +70,7 @@ export default function Welcome() {
 
                             pinewoodRef.current.style.width = `${fullWidth}px`;
 
-                            // Set back to auto after animation completes (1000ms)
+                            // Set back to auto after animation completes
                             setTimeout(() => {
                                 if (pinewoodRef.current) {
                                     pinewoodRef.current.style.width = "auto";
@@ -79,7 +80,7 @@ export default function Welcome() {
                                 }
                                 // Enable scroll handler after initial animation completes
                                 setScrollHandlerEnabled(true);
-                            }, 1000);
+                            }, REVEAL_CONFIG.durationMs);
                         }
                     }, 50); // Small delay to ensure transition is applied
                 }
@@ -164,7 +165,7 @@ export default function Welcome() {
                                     transform: `scale(${textScale})`,
                                     transition: scrollHandlerEnabled
                                         ? "none"
-                                        : "transform 1000ms ease-out",
+                                        : `transform ${REVEAL_CONFIG.durationMs}ms ease-out`,
                                     transformOrigin: "center",
                                 }}
                             >
