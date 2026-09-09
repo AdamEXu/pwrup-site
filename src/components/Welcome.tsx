@@ -202,7 +202,7 @@ export default function Welcome() {
                                                 "right"
                                                     ? "rtl"
                                                     : "ltr",
-                                            fontWeight: 500,
+                                            fontWeight: 400,
                                             // For center alignment, we need to position the text properly during animation
                                             ...(REVEAL_CONFIG.textAlign ===
                                                 "center" && {

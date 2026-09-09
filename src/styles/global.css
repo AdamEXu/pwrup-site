@@ -7,6 +7,7 @@
     html {
         background: #000;
         font-family: "Bricolage Grotesque", sans-serif;
+        font-weight: 300;
     }
 
     body {
@@ -21,7 +22,7 @@
     h5,
     h6 {
         font-family: "Bricolage Grotesque", sans-serif;
-        font-weight: 800;
+        font-weight: 600;
     }
 }
 

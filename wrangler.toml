@@ -10,7 +10,7 @@ compatibility_date = "2026-07-08"
 directory = "./dist"
 binding = "ASSETS"
 # Only the redirect routes hit the Worker; everything else is served straight from the asset cache.
-run_worker_first = ["/sign-up", "/sign-up/", "/submit", "/submit/", "/tech-club", "/tech-club/"]
+run_worker_first = ["/sign-up", "/sign-up/", "/submit", "/submit/", "/tech-club", "/tech-club/", "/video/*.mp4"]
 
 # Production custom domains. Deploy with:
 #   CLOUDFLARE_ACCOUNT_ID=007109207807e3fa4cf11bf6090879da wrangler deploy --env production

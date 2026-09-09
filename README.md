@@ -12,7 +12,7 @@ This is the official website for Pinewood Robotics, FRC team 4765. Built with mo
 -   **Analytics**: PostHog integration for user analytics
 -   **Authentication**: Clerk integration for user management
 -   **Cloud Storage**: AWS S3 integration for media assets
--   **Video Streaming**: HLS.js support for video content
+-   **Background video**: AV1/HEVC/H.264 MP4s served as static assets, no player library
 -   **Deployment Ready**: Cloudflare Workers deployment configuration
 
 ## 🛠️ Tech Stack
@@ -42,7 +42,6 @@ This is the official website for Pinewood Robotics, FRC team 4765. Built with mo
 -   **[PostHog](https://posthog.com/)** - Product analytics
 -   **[AWS SDK](https://aws.amazon.com/sdk-for-javascript/)** - S3 storage integration
 -   **[Upstash Redis](https://upstash.com/)** - Serverless Redis database
--   **[HLS.js](https://github.com/video-dev/hls.js/)** - HTTP Live Streaming
 
 ### Development Tools
 

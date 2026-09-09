@@ -58,6 +58,8 @@ const fullUrl = canonical || `${siteUrl}${Astro.url.pathname}`;
 		<link rel="preload" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 		<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap"></noscript>
 
+		<slot name="head" />
+
 		<!-- PostHog Analytics -->
 		<PostHog />
 	</head>

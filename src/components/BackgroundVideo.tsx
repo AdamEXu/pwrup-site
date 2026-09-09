@@ -1,180 +1,92 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
-import Hls from "hls.js";
-
-type Source = { src: string; type: string };
 
 type BackgroundVideoProps = {
-    /** HLS stream URL (takes priority over sources) */
-    hlsUrl?: string;
-    /** Preferred first (e.g., WebM), with MP4 fallback */
-    sources?: Source[];
-    /** Fade-in duration ms */
-    fadeMs?: number;
-    /** Delay before we even *mount* the video element (ms) to avoid competing with critical work */
-    mountDelayMs?: number;
-    /** Extra wrapper classes */
-    className?: string;
-    /** External trigger to start the fade-in animation */
+    /** Flip to true on the beat; the whole layer fades in over fadeMs. */
     startFadeIn?: boolean;
+    fadeMs?: number;
+    className?: string;
 };
 
-/**
- * Non-blocking background video:
- * - Lazy mounts after first paint/idle + only when visible
- * - preload="metadata" (don’t fetch full file up front)
- * - Lets the browser stream/buffer (no custom buffering)
- * - Respects reduced motion & tab visibility
- */
+// 24px-wide blurred first frame, so the beat always has *something* to fade in
+// even before the real poster has arrived.
+const LQIP =
+    "data:image/webp;base64,UklGRpAAAABXRUJQVlA4IIQAAADQAwCdASoYAA4APu1iqU2ppaQiMAgBMB2JQBOmUABnIy6CRcVlqRgA3kPNimqx/lP7gsX79V3I5t4SH3CN/iEdKSCwd5L/hGWZBdArNsmI4QyAGsN8TROtebrBEj0/IQsX7FVRbJniaOIm9rmCSRiHwZbrV/EPymmwopTww9DjSISpvAA=";
+
+// Ordered by efficiency; the browser takes the first <source> it can decode.
+// Codec strings matter: without them Safari/Chrome will claim "maybe" for a
+// bare video/mp4 and then fail on an AV1 stream they can't play.
+// H.264 only exists at 480p: it is the fallback for hardware too old to
+// decode AV1 or HEVC, which is never going to want 720p either.
+const CODECS = [
+    { file: "av1", type: 'video/mp4; codecs="av01.0.05M.08"', heights: [480, 720] },
+    { file: "hevc", type: 'video/mp4; codecs="hvc1.1.6.L93.B0"', heights: [480, 720] },
+    { file: "h264", type: 'video/mp4; codecs="avc1.64001F"', heights: [480] },
+];
+
+const MOBILE_BREAKPOINT = 768;
+
 export default function BackgroundVideo({
-    hlsUrl = "https://cdn.pinewood.one/homepage_background_video/hls/master.m3u8",
-    fadeMs = 500,
-    mountDelayMs = 100,
-    className = "",
     startFadeIn = false,
+    fadeMs = 1000,
+    className = "",
 }: BackgroundVideoProps) {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+    const layerRef = useRef<HTMLDivElement | null>(null);
     const videoRef = useRef<HTMLVideoElement | null>(null);
-    const hlsRef = useRef<Hls | null>(null);
 
-    const [shouldMount, setShouldMount] = useState(false); // create the <video> at all?
-    const [visible, setVisible] = useState(false); // in viewport?
-    const [videoReady, setVideoReady] = useState(false); // video can play
-    const [shouldFadeIn, setShouldFadeIn] = useState(false); // external trigger received and video ready
-    const [fadeInComplete, setFadeInComplete] = useState(false); // fade-in animation finished
-    const [scrollOpacity, setScrollOpacity] = useState(1); // scroll-based opacity multiplier
-    const [scrollBlur, setScrollBlur] = useState(0); // scroll-based blur in pixels
+    const [mounted, setMounted] = useState(false);
+    const [reducedMotion, setReducedMotion] = useState(false);
+    const [posterLoaded, setPosterLoaded] = useState(false);
+    const [videoVisible, setVideoVisible] = useState(false);
+    const [height, setHeight] = useState(720);
+    const [fadeDone, setFadeDone] = useState(false);
 
-    // Respect OS-level reduced motion: show poster only, never mount video
-    const prefersReducedMotion =
-        typeof window !== "undefined" &&
-        window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
-
-    // Delay *mounting* the <video> until after first paint/idle so your other JS runs freely
+    // The opacity transition must be removed once the beat fade has finished,
+    // otherwise every scroll tick would animate too.
     useEffect(() => {
-        if (prefersReducedMotion) return; // skip entirely
-        let canceled = false;
+        if (!startFadeIn) return;
+        const t = setTimeout(() => setFadeDone(true), fadeMs);
+        return () => clearTimeout(t);
+    }, [startFadeIn, fadeMs]);
 
-        const start = () => {
-            if (!canceled) setShouldMount(true);
-        };
-
-        // Prefer requestIdleCallback; fall back to a short timeout
-        const w = window as any;
-        const id =
-            w.requestIdleCallback?.(start, { timeout: mountDelayMs }) ??
-            window.setTimeout(start, mountDelayMs);
-
-        return () => {
-            canceled = true;
-            if (w.cancelIdleCallback) w.cancelIdleCallback(id);
-            else clearTimeout(id);
-        };
-    }, [mountDelayMs, prefersReducedMotion]);
-
-    // Only load when the container is (about to be) visible
     useEffect(() => {
-        if (!shouldMount || prefersReducedMotion) return;
-        const el = containerRef.current;
-        if (!el) return;
-
-        const io = new IntersectionObserver(
-            (entries) => {
-                const entry = entries[0];
-                setVisible(entry.isIntersecting || entry.intersectionRatio > 0);
-            },
-            { root: null, rootMargin: "400px", threshold: 0.01 } // pre-warm slightly before it scrolls in
+        setReducedMotion(
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
-        io.observe(el);
-        return () => io.disconnect();
-    }, [shouldMount, prefersReducedMotion]);
+        setHeight(window.innerWidth < MOBILE_BREAKPOINT ? 480 : 720);
+        setMounted(true);
+    }, []);
 
-    // Initialize HLS when video is visible and mounted
+    // Scroll fade/blur written straight to the DOM: this runs on every Lenis
+    // frame and must not re-render React.
     useEffect(() => {
-        if (!shouldMount || !visible || prefersReducedMotion || !hlsUrl) return;
-
-        const video = videoRef.current;
-        if (!video) return;
-
-        // Clean up any existing HLS instance
-        if (hlsRef.current) {
-            hlsRef.current.destroy();
-            hlsRef.current = null;
-        }
-
-        if (Hls.isSupported()) {
-            // Use HLS.js for browsers that support it
-            const hls = new Hls({
-                enableWorker: false, // Disable worker for better compatibility
-                lowLatencyMode: false,
-                backBufferLength: 90,
-                // Start with higher quality assumptions
-                startLevel: -1, // Let HLS.js auto-select, but with better defaults below
-                capLevelToPlayerSize: false, // Don't limit quality based on player size
-                maxLoadingDelay: 4,
-                maxBufferLength: 30,
-                maxBufferSize: 60 * 1000 * 1000, // 60MB buffer
-                // Aggressive bandwidth estimation for better initial quality
-                abrEwmaDefaultEstimate: 5000000, // Start assuming 5Mbps instead of default ~500kbps
-                abrEwmaSlowVoD: 3, // Faster adaptation for VoD content
-                abrEwmaFastVoD: 3,
-                abrMaxWithRealBitrate: false, // Don't be overly conservative
-                // Quality switching
-                abrBandWidthFactor: 0.7, // Less conservative bandwidth factor
-                abrBandWidthUpFactor: 0.7, // Less conservative for upward switches
-            });
-
-            hlsRef.current = hls;
-            hls.loadSource(hlsUrl);
-            hls.attachMedia(video);
-
-            hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                // Force start with a higher quality level
-                const levels = hls.levels;
-                if (levels.length > 1) {
-                    // Start with at least 720p if available, or second-highest quality
-                    const targetLevel = levels.findIndex(
-                        (level) => level.height >= 720
-                    );
-                    if (targetLevel !== -1) {
-                        hls.startLevel = targetLevel;
-                    } else if (levels.length > 2) {
-                        // If no 720p, use second-highest quality
-                        hls.startLevel = levels.length - 2;
-                    }
-                }
-                video.play().catch(() => {});
-            });
-
-            hls.on(Hls.Events.ERROR, (_, data) => {
-                console.warn("HLS error:", data);
-                if (data.fatal) {
-                    setVideoReady(true); // Show video even on error to avoid staying transparent
-                }
-            });
-        } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-            // Safari native HLS support
-            video.src = hlsUrl;
-            video.addEventListener("loadedmetadata", () => {
-                video.play().catch(() => {});
-            });
-        } else {
-            console.warn("HLS not supported, falling back to regular sources");
-            setVideoReady(true);
-        }
-
-        return () => {
-            if (hlsRef.current) {
-                hlsRef.current.destroy();
-                hlsRef.current = null;
-            }
+        if (reducedMotion) return;
+        let raf = 0;
+        const apply = () => {
+            raf = 0;
+            const el = layerRef.current;
+            if (!el) return;
+            const p = Math.min(window.scrollY / window.innerHeight, 1);
+            const blur = p * 32;
+            el.style.setProperty("--scroll-opacity", String(1 - p));
+            el.style.filter = blur > 0.05 ? `blur(${blur}px)` : "";
+            el.style.transform = `scale(${1 + blur * 0.05})`;
         };
-    }, [shouldMount, visible, prefersReducedMotion, hlsUrl]);
+        const onScroll = () => {
+            if (!raf) raf = requestAnimationFrame(apply);
+        };
+        apply();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        const lenis = (window as any).lenis;
+        lenis?.on("scroll", onScroll);
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            lenis?.off("scroll", onScroll);
+            if (raf) cancelAnimationFrame(raf);
+        };
+    }, [reducedMotion]);
 
-    // Pause on hidden tab, resume on visible
     useEffect(() => {
-        if (!shouldMount || prefersReducedMotion) return;
+        if (reducedMotion) return;
         const onVis = () => {
             const v = videoRef.current;
             if (!v) return;
@@ -183,129 +95,95 @@ export default function BackgroundVideo({
         };
         document.addEventListener("visibilitychange", onVis);
         return () => document.removeEventListener("visibilitychange", onVis);
-    }, [shouldMount, prefersReducedMotion]);
+    }, [reducedMotion]);
 
-    // Handle scroll-based opacity and blur effects
     useEffect(() => {
-        if (prefersReducedMotion) return;
-
-        const handleScroll = () => {
-            const scrollY = window.scrollY;
-            const windowHeight = window.innerHeight;
-
-            // Calculate scroll progress from 0 to 1 (0vh to 100vh)
-            const scrollProgress = Math.min(scrollY / windowHeight, 1);
-
-            // Opacity multiplier: 1 at top, 0 at 100vh
-            const opacityMultiplier = 1 - scrollProgress;
-
-            // Blur: 0px at top, 32px at 100vh
-            const blurAmount = scrollProgress * 32;
-
-            setScrollOpacity(opacityMultiplier);
-            setScrollBlur(blurAmount);
-        };
-
-        // Initial calculation
-        handleScroll();
-
-        // Listen to both native scroll and Lenis scroll events
-        window.addEventListener("scroll", handleScroll);
-
-        // Also listen to Lenis scroll events if available
-        const checkLenis = () => {
-            const lenis = (window as any).lenis;
-            if (lenis) {
-                lenis.on("scroll", handleScroll);
-                return () => lenis.off("scroll", handleScroll);
-            }
-            return null;
-        };
-
-        // Try to attach Lenis listener immediately, or wait a bit for it to initialize
-        let lenisCleanup = checkLenis();
-        const lenisTimeout = setTimeout(() => {
-            if (!lenisCleanup) {
-                lenisCleanup = checkLenis();
-            }
-        }, 100);
-
+        const v = videoRef.current;
         return () => {
-            window.removeEventListener("scroll", handleScroll);
-            if (lenisCleanup) lenisCleanup();
-            clearTimeout(lenisTimeout);
-        };
-    }, [prefersReducedMotion]);
-
-    // Handle external fade-in trigger combined with video readiness
-    useEffect(() => {
-        if (videoReady && startFadeIn) {
-            setShouldFadeIn(true);
-            // Mark fade-in as complete after the animation duration
-            const timer = setTimeout(() => {
-                setFadeInComplete(true);
-            }, fadeMs);
-            return () => clearTimeout(timer);
-        }
-    }, [videoReady, startFadeIn, fadeMs]);
-
-    // Clean up GPU/memory on unmount
-    useEffect(() => {
-        return () => {
-            // Clean up HLS
-            if (hlsRef.current) {
-                hlsRef.current.destroy();
-                hlsRef.current = null;
-            }
-
-            // Clean up video
-            const v = videoRef.current;
             if (!v) return;
             try {
                 v.pause();
                 v.removeAttribute("src");
-                v.srcObject = null;
                 v.load();
             } catch {}
         };
     }, []);
 
+    const showVideo = mounted && !reducedMotion;
+
     return (
         <div
-            ref={containerRef}
             className={`fixed inset-0 -z-10 overflow-hidden bg-black ${className}`}
             aria-hidden="true"
         >
-            {shouldMount && visible && (
-                <video
-                    ref={videoRef}
-                    className="absolute inset-0 h-full w-full object-cover pointer-events-none"
-                    style={{
-                        opacity: shouldFadeIn ? scrollOpacity : 0,
-                        filter: `blur(${scrollBlur}px)`,
-                        transform: `scale(${1 + scrollBlur * 0.05})`, // Scale up slightly to compensate for blur edge sampling
-                        transition:
-                            shouldFadeIn && !fadeInComplete
-                                ? `opacity ${fadeMs}ms ease-in-out`
-                                : "none",
-                    }}
-                    // Keep it as a decorative, auto-playing background
-                    tabIndex={-1}
-                    muted
-                    playsInline
-                    autoPlay
-                    loop
-                    // CRUCIAL: don’t grab the whole file up front
-                    preload="metadata"
-                    // nice UX while waiting
-                    onCanPlay={() => setVideoReady(true)}
-                    onError={() => setVideoReady(true)} // avoid staying transparent on error
-                    disableRemotePlayback
-                >
-                    {/* Only use fallback sources if HLS is not supported */}
-                    {!hlsUrl}
-                </video>
-            )}
+            <div
+                ref={layerRef}
+                className="absolute inset-0"
+                style={{
+                    opacity: startFadeIn ? "var(--scroll-opacity, 1)" : 0,
+                    transition:
+                        startFadeIn && !fadeDone && !reducedMotion
+                            ? `opacity ${fadeMs}ms ease-out`
+                            : "none",
+                    willChange: "opacity",
+                }}
+            >
+                <img
+                    src={LQIP}
+                    alt=""
+                    decoding="sync"
+                    className="absolute inset-0 h-full w-full object-cover"
+                />
+                <picture>
+                    <source srcSet="/video/poster.avif" type="image/avif" />
+                    <source srcSet="/video/poster.webp" type="image/webp" />
+                    <img
+                        src="/video/poster.jpg"
+                        alt=""
+                        fetchPriority="high"
+                        decoding="async"
+                        onLoad={() => setPosterLoaded(true)}
+                        className="absolute inset-0 h-full w-full object-cover"
+                        style={{
+                            opacity: posterLoaded ? 1 : 0,
+                            transition: "opacity 200ms linear",
+                        }}
+                    />
+                </picture>
+                {showVideo && (
+                    <video
+                        ref={videoRef}
+                        className="absolute inset-0 h-full w-full object-cover pointer-events-none"
+                        style={{
+                            opacity: videoVisible ? 1 : 0,
+                            transition: "opacity 300ms linear",
+                        }}
+                        tabIndex={-1}
+                        muted
+                        playsInline
+                        autoPlay
+                        loop
+                        preload="auto"
+                        disableRemotePlayback
+                        disablePictureInPicture
+                        // "playing" rather than "canplay": the first frame is
+                        // guaranteed painted, so the poster→video swap is a
+                        // no-op visually.
+                        onPlaying={() => setVideoVisible(true)}
+                    >
+                        {CODECS.map((c) => (
+                            <source
+                                key={c.file}
+                                src={`/video/bg-${c.file}-${
+                                    c.heights.includes(height) ? height : c.heights[0]
+                                }.mp4`}
+                                type={c.type}
+                            />
+                        ))}
+                    </video>
+                )}
+                <div className="absolute inset-0 bg-black/30" />
+            </div>
         </div>
     );
 }

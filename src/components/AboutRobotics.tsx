@@ -10,7 +10,7 @@ export default function AboutRobotics() {
                 <div className="text-white drop-shadow-2xl text-center text-2xl w-full lg:w-1/2">
                     <p
                         className="text-3xl md:text-4xl text-left"
-                        style={{ fontWeight: 300, lineHeight: 1.5 }}
+                        style={{ fontWeight: 200, lineHeight: 1.5 }}
                     >
                         <span>
                             We are a team of students from Pinewood School, and
@@ -25,7 +25,7 @@ export default function AboutRobotics() {
                     </p>
                     <p
                         className="text-3xl md:text-4xl text-left mt-4"
-                        style={{ fontWeight: 500, lineHeight: 1.5 }}
+                        style={{ fontWeight: 400, lineHeight: 1.5 }}
                     >
                         Robotics is:
                     </p>

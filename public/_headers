@@ -36,3 +36,8 @@
 
 /*.ico
   Cache-Control: public, max-age=31536000, immutable
+
+# Background video and posters. Filenames are fixed, so a replacement video
+# must ship under a new name to get past this.
+/video/*
+  Cache-Control: public, max-age=31536000, immutable

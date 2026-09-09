@@ -7,5 +7,6 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
+	<link slot="head" rel="preload" as="image" href="/video/poster.avif" type="image/avif" fetchpriority="high" />
 	<Welcome client:load />
 </Layout>
