@@ -84,7 +84,7 @@ export default function Welcome() {
                         }
                     }, 50); // Small delay to ensure transition is applied
                 }
-            }, 300);
+            }, 150);
         }
     }, [typewriterComplete, animationStarted]);
 
@@ -181,7 +181,7 @@ export default function Welcome() {
                                     >
                                         <TypewriterEffect
                                             words={words}
-                                            speed={100}
+                                            speed={70}
                                             jitter={0}
                                             onComplete={() =>
                                                 setTypewriterComplete(true)
@@ -203,7 +203,7 @@ export default function Welcome() {
                                                 "right"
                                                     ? "rtl"
                                                     : "ltr",
-                                            fontWeight: 400,
+                                            fontWeight: 700,
                                             // For center alignment, we need to position the text properly during animation
                                             ...(REVEAL_CONFIG.textAlign ===
                                                 "center" && {
