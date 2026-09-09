@@ -63,12 +63,17 @@ export default function NavBar({
                 className="flex justify-between items-center"
             >
                 <div id="navleft">
-                    <a href="/">
+                    <a href="/" className="flex items-center gap-2">
                         <img
-                            src="/PWRUP_text.svg"
-                            alt="PWRUP"
-                            className="h-8"
+                            src="/pwrup-icon.svg"
+                            alt=""
+                            width="297"
+                            height="396"
+                            className="h-8 w-auto"
                         />
+                        <span className="text-[#70ce35] text-3xl font-bold leading-none">
+                            PWRUP
+                        </span>
                     </a>
                 </div>
                 <div

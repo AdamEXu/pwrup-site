@@ -22,7 +22,7 @@ const words = [
 // Configuration for the reveal animation
 const REVEAL_CONFIG = {
     textAlign: "right" as "left" | "center" | "right", // Change this to control animation direction
-    text: "Pinewood Robotics",
+    text: "PWRUP",
 };
 
 export default function Welcome() {
