@@ -6,7 +6,7 @@
 @layer base {
     html {
         background: #000;
-        font-family: "Jost", sans-serif;
+        font-family: "Bricolage Grotesque", sans-serif;
     }
 
     body {
@@ -20,8 +20,8 @@
     h4,
     h5,
     h6 {
-        font-family: "Red Hat Display", sans-serif;
-        font-weight: 900; /* Extra bold for headers */
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-weight: 800;
     }
 }
 

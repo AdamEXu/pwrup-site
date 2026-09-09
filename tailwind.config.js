@@ -3,12 +3,8 @@ export default {
     theme: {
     	extend: {
     		fontFamily: {
-    			jost: [
-    				'Jost',
-    				'sans-serif'
-    			],
-    			redhat: [
-    				'Red Hat Display',
+    			sans: [
+    				'Bricolage Grotesque',
     				'sans-serif'
     			]
     		},

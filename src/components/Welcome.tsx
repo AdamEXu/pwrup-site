@@ -225,16 +225,16 @@ export default function Welcome() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    <FancyButton className="w-full sm:w-[160px]">
+                                    <FancyButton className="w-full sm:w-[180px] whitespace-nowrap">
                                         Register Interest
                                     </FancyButton>
                                 </a>
                                 {/* <a href="/blog">
-                                    <FancyButton className="w-full sm:w-[160px]">
+                                    <FancyButton className="w-full sm:w-[180px] whitespace-nowrap">
                                         Blog
                                     </FancyButton>
                                 </a>
-                                <FancyButton className="w-full sm:w-[160px]">
+                                <FancyButton className="w-full sm:w-[180px] whitespace-nowrap">
                                     Socials
                                 </FancyButton> */}
                             </div>
