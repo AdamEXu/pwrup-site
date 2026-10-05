@@ -39,7 +39,7 @@
         "@types/three": "^0.186.0",
         "fsevents": "^2.3.3",
         "tailwindcss": "^4.3.3",
-        "wrangler": "^4.136.3"
+        "wrangler": "^4.142.0"
     },
     "packageManager": "pnpm@9.12.3",
     "engines": {
