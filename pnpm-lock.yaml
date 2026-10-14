@@ -12,17 +12,17 @@ importers:
         specifier: ^6.0.6
         version: 6.0.6(@types/node@24.3.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(terser@5.51.2)(yaml@2.8.1)
       '@aws-sdk/client-s3':
-        specifier: ^3.1146.0
-        version: 3.1146.0
+        specifier: ^3.1147.0
+        version: 3.1147.0
       '@aws-sdk/s3-request-presigner':
-        specifier: ^3.1146.0
-        version: 3.1146.0
+        specifier: ^3.1147.0
+        version: 3.1147.0
       '@clerk/astro':
-        specifier: ^4.1.9
-        version: 4.1.9(astro@7.3.5(@types/node@24.3.0)(@upstash/redis@1.39.0)(@vercel/functions@2.2.13(@aws-sdk/credential-provider-web-identity@3.972.78))(idb-keyval@6.2.1)(jiti@2.7.0)(terser@5.51.2)(yaml@2.8.1))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^4.1.10
+        version: 4.1.10(astro@7.3.5(@types/node@24.3.0)(@upstash/redis@1.39.0)(@vercel/functions@2.2.13(@aws-sdk/credential-provider-web-identity@3.972.78))(idb-keyval@6.2.1)(jiti@2.7.0)(terser@5.51.2)(yaml@2.8.1))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@clerk/clerk-js':
-        specifier: ^6.37.0
-        version: 6.37.0(@types/react@19.3.0)(bufferutil@4.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.2)(use-sync-external-store@1.5.0(react@19.3.0))(utf-8-validate@6.0.6)(zod@3.25.76)
+        specifier: ^6.38.0
+        version: 6.38.0(@types/react@19.3.0)(bufferutil@4.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.2)(use-sync-external-store@1.5.0(react@19.3.0))(utf-8-validate@6.0.6)(zod@3.25.76)
       '@react-three/fiber':
         specifier: 9.8.1
         version: 9.8.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(utf-8-validate@6.0.6))(react@19.3.0)(three@0.186.1)
@@ -195,8 +195,8 @@ packages:
     resolution: {integrity: sha512-x12Q17KYlJAd3nKf8LV5LV0vt8sh8/6YfQLGPtrGnQf/tW4jqxPGq5GPpuVitpQYM3eUR4XB7CbxZf751NMbLw==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/client-s3@3.1146.0':
-    resolution: {integrity: sha512-WY0YCBzxc4muFfY6UbGpA+oib0nGT/Px2aEPGYX7pp1la2OmDLChnK81mu8H7LdYvwGU1pLAsLIa/qgad0Wd7g==}
+  '@aws-sdk/client-s3@3.1147.0':
+    resolution: {integrity: sha512-uTrcJxnJKPr8bc1z7cMxopYSQyAm2dPfiMK+UiBr51L8MzimDxHbW/d9GR6X/LFbWDpMzfFPLhB4UohDrCSaPQ==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/core@3.978.1':
@@ -243,8 +243,8 @@ packages:
     resolution: {integrity: sha512-oRxtBcka/JGHGs9l9p9IVajGoTP8vTPmoAzdHGy4Qcy9P5vPnDf6nhIeM/COQNY9k/OahImTRaLkHftoXvfcmQ==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/s3-request-presigner@3.1146.0':
-    resolution: {integrity: sha512-5BEfVr2OYX2bwB45NSWAXPoTN5M2NPLOHohgKV+XfMNcL5TF7UQN4hAOVF4S6DwrA4BrI3MsAry7vqdZ2aJEjg==}
+  '@aws-sdk/s3-request-presigner@3.1147.0':
+    resolution: {integrity: sha512-9za8GOn8IRFz+foPbLfjFFfqDV87mLBhNbUg+8YgqaSIuvzx+o6bWgOAETqPev5wul6DAImTQSCgt8mBsKtGUg==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/signature-v4-multi-region@3.996.47':
@@ -414,22 +414,22 @@ packages:
     resolution: {integrity: sha512-y7/yvZ2TPAnR9+jnc00klvNNLkJiXFFrQA/hlLCcxA9a2A4zQIOimyFQ9XfwYKiGD1fb5GY8vbKIIgO8d5Tb2A==}
     engines: {node: '>= 20.12.0'}
 
-  '@clerk/astro@4.1.9':
-    resolution: {integrity: sha512-2PUHh1mlR0DZbMHiot4W+49Ibq5lJ+dEaLs3+v2tn8RBpiMriDsDKmf1nmYv4Ftvcs0syMDSPViqoxCp/e2/vg==}
+  '@clerk/astro@4.1.10':
+    resolution: {integrity: sha512-dMB3p6ZztsU5bEuDY7ZJ0wC0xjAQ63v+o7LEuHGRcHzhF/3ffAqbH+WovEL1ThQE1QIc98nFtto+TdB/RCLIrg==}
     engines: {node: '>=20.9.0'}
     peerDependencies:
       astro: ^5.0.0 || ^6.0.0 || ^7.0.0
 
-  '@clerk/backend@3.22.0':
-    resolution: {integrity: sha512-YBJtclx3ytvQGNYhf0/pG+WHUk1ams7Aai3D2AB8c96AkSnzUE+i1Q98HyupIulPDr3fUWeQJtex4DYyO9D4fA==}
+  '@clerk/backend@3.23.2':
+    resolution: {integrity: sha512-QW2qJPY7xQyn5SrNWJ+xO7o6va60X9/v4nX8y5zq8OJFS10X7GlEz8s5PDKTgo6W6SWb8L3APhrZH+LTp7yuNw==}
     engines: {node: '>=20.9.0'}
 
-  '@clerk/clerk-js@6.37.0':
-    resolution: {integrity: sha512-MQsjepR/tJ0lqXui/rdCBXDB0weIwGY01Pq29o3H0wPY/na6JTo2PAlY/+36eMr6HXbi7CoXqGDqAyKCqtzAjw==}
+  '@clerk/clerk-js@6.38.0':
+    resolution: {integrity: sha512-c9Ds+1SzLo0Cz2DrxfagYlUeAqfbXP+hehCFORfEsD/z0ePvewhMtIM2SjPYODHckRi2bnY7Lpgc91KcLmanBg==}
     engines: {node: '>=20.9.0'}
 
-  '@clerk/shared@4.38.0':
-    resolution: {integrity: sha512-jVHz03682SJ3xsjsSjNX8YyWHllnr91qQEQZpZjCHGUIwGz3rYVavh69cofSuvPrqwOtXReukVEMtodzG2vVCQ==}
+  '@clerk/shared@4.40.0':
+    resolution: {integrity: sha512-80KM/uw5ZseYTKwJjIhJj7jsHqX6rFem6cwcFJVCUriE3R4tpzkhXsfbhtdho6cG2pQD3NVqKspxTVbSjATzPg==}
     engines: {node: '>=20.9.0'}
     peerDependencies:
       react: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
@@ -3467,7 +3467,7 @@ snapshots:
       '@smithy/types': 4.19.0
       tslib: 2.8.1
 
-  '@aws-sdk/client-s3@3.1146.0':
+  '@aws-sdk/client-s3@3.1147.0':
     dependencies:
       '@aws-sdk/checksums': 3.1001.1
       '@aws-sdk/core': 3.978.1
@@ -3596,7 +3596,7 @@ snapshots:
       '@smithy/types': 4.19.0
       tslib: 2.8.1
 
-  '@aws-sdk/s3-request-presigner@3.1146.0':
+  '@aws-sdk/s3-request-presigner@3.1147.0':
     dependencies:
       '@aws-sdk/core': 3.978.1
       '@aws-sdk/signature-v4-multi-region': 3.996.47
@@ -3814,10 +3814,10 @@ snapshots:
       fast-wrap-ansi: 0.2.2
       sisteransi: 1.0.5
 
-  '@clerk/astro@4.1.9(astro@7.3.5(@types/node@24.3.0)(@upstash/redis@1.39.0)(@vercel/functions@2.2.13(@aws-sdk/credential-provider-web-identity@3.972.78))(idb-keyval@6.2.1)(jiti@2.7.0)(terser@5.51.2)(yaml@2.8.1))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@clerk/astro@4.1.10(astro@7.3.5(@types/node@24.3.0)(@upstash/redis@1.39.0)(@vercel/functions@2.2.13(@aws-sdk/credential-provider-web-identity@3.972.78))(idb-keyval@6.2.1)(jiti@2.7.0)(terser@5.51.2)(yaml@2.8.1))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
-      '@clerk/backend': 3.22.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@clerk/shared': 4.38.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@clerk/backend': 3.23.2(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@clerk/shared': 4.40.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       astro: 7.3.5(@types/node@24.3.0)(@upstash/redis@1.39.0)(@vercel/functions@2.2.13(@aws-sdk/credential-provider-web-identity@3.972.78))(idb-keyval@6.2.1)(jiti@2.7.0)(terser@5.51.2)(yaml@2.8.1)
       nanoid: 5.1.16
       nanostores: 1.5.1
@@ -3825,19 +3825,19 @@ snapshots:
       - react
       - react-dom
 
-  '@clerk/backend@3.22.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@clerk/backend@3.23.2(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
-      '@clerk/shared': 4.38.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@clerk/shared': 4.40.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       standardwebhooks: 1.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
       - react
       - react-dom
 
-  '@clerk/clerk-js@6.37.0(@types/react@19.3.0)(bufferutil@4.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.2)(use-sync-external-store@1.5.0(react@19.3.0))(utf-8-validate@6.0.6)(zod@3.25.76)':
+  '@clerk/clerk-js@6.38.0(@types/react@19.3.0)(bufferutil@4.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.2)(use-sync-external-store@1.5.0(react@19.3.0))(utf-8-validate@6.0.6)(zod@3.25.76)':
     dependencies:
       '@base-org/account': 2.0.1(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(typescript@5.9.2)(use-sync-external-store@1.5.0(react@19.3.0))(utf-8-validate@6.0.6)(zod@3.25.76)
-      '@clerk/shared': 4.38.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@clerk/shared': 4.40.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@coinbase/wallet-sdk': 4.3.7(bufferutil@4.1.0)(typescript@5.9.2)(utf-8-validate@6.0.6)(zod@3.25.76)
       '@stripe/stripe-js': 5.6.0
       '@swc/helpers': 0.5.21
@@ -3861,7 +3861,7 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@clerk/shared@4.38.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@clerk/shared@4.40.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@tanstack/query-core': 5.102.8
       dequal: 2.0.3
