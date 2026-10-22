@@ -89,7 +89,7 @@ pwrup-site/
 
 ### Prerequisites
 
--   **Node.js** (v22.12 or higher; Astro 7 requires `>=22.12.0`)
+-   **Node.js** (v22.22 or higher; Astro 7.4 requires `>=22.22.0`)
 -   **pnpm** 9.12.3 or later (pinned via `packageManager`)
 
 ### Installation
@@ -230,7 +230,7 @@ const REVEAL_CONFIG = {
     pnpm deploy
     ```
 
-The site is configured for static deployment. Cloudflare Workers Builds must use Node.js 22.12 or later (`.nvmrc` and `package.json` `engines.node`). Cache headers for hashed assets live in `public/_headers`. Production custom domains (`pinewoodrobotics.org`) are under `[env.production]` in `wrangler.toml`.
+The site is configured for static deployment. Cloudflare Workers Builds must use Node.js 22.22 or later (`.nvmrc` and `package.json` `engines.node`). Cache headers for hashed assets live in `public/_headers`. Production custom domains (`pinewoodrobotics.org`) are under `[env.production]` in `wrangler.toml`.
 
 ### Alternative Deployment Options
 

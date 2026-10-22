@@ -1,6 +1,6 @@
 name = "pwrup-site"
 main = "src/worker.ts"
-# Build-time Node is pinned via package.json engines and .nvmrc (>=22.12).
+# Build-time Node is pinned via package.json engines and .nvmrc (>=22.22).
 # Do not set a top-level account_id: Workers Builds authenticates as the
 # Git-connected Cloudflare account (Adam), while pinewoodrobotics.org
 # production lives on the Pinewood Robotics account.
